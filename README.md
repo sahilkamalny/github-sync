@@ -18,7 +18,11 @@ A highly polished, reliable, and OS-aware shell utility to aggressively synchron
 Open this folder in your file manager and double-click `macOS-Install.command`.
 *(To remove it later, simply double-click `macOS-Uninstall.command`)*
 
-**For Linux / Terminal Users:**
+**For Linux Desktop (One-Click):**
+Open this folder in your file manager and double-click `Linux-Install.sh`.
+*(To remove it later, simply double-click `Linux-Uninstall.sh`)*
+
+**Terminal Users (All OS):**
 Ensure you are in the root directory and run:
 
 ```bash
