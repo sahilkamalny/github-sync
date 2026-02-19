@@ -15,8 +15,8 @@ A highly polished, reliable, and OS-aware shell utility to aggressively synchron
 
 ## Installation
 **For macOS (One-Click):**
-Simply open the folder in Finder and double-click `Install.command`.
-*(To remove it later, double-click `Uninstall.command`)*
+Open this folder in your file manager and double-click `macOS-Install.command`.
+*(To remove it later, simply double-click `macOS-Uninstall.command`)*
 
 **For Linux / Terminal Users:**
 Ensure you are in the root directory and run:

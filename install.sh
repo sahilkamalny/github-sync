@@ -54,6 +54,12 @@ if [[ "$OS" == "Darwin" ]]; then
     APP_DIR="$REPO_DIR/$APP_NAME"
     osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$SCRIPT_PATH'\"" -e "end tell"
     
+    # Replace default AppleScript icon with native Terminal icon
+    if [ -f "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" ]; then
+        cp "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" "$APP_DIR/Contents/Resources/applet.icns"
+        touch "$APP_DIR"
+    fi
+    
     echo "* Created macOS application at $APP_DIR"
     echo "* You can drag this into your /Applications folder or run via Spotlight."
 
@@ -69,11 +75,13 @@ elif [[ "$OS" == "Linux" ]]; then
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=Sync GitHub Repositories
+Name=Sync GitHub
 Comment=Synchronize all local GitHub repositories
 Exec=$SCRIPT_PATH
+Icon=utilities-terminal
 Terminal=true
 Categories=Utility;Development;
+Keywords=git;github;sync;repository;
 EOF
 
     chmod +x "$DESKTOP_FILE"
