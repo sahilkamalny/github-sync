@@ -38,7 +38,7 @@ Ensure you are in the root directory and run:
 ```
 
 **The installer will automatically:**
-1. Make the core script executable.
+1. Make the core scripts executable.
 2. Link the CLI utility to your path (`~/.local/bin/github-sync`), allowing you to invoke it from anywhere.
 3. Generate a Spotlight-searchable macOS wrapper (`GitHub Sync.app`) or a launcher `.desktop` shortcut on Linux.
 
@@ -47,7 +47,7 @@ Ensure you are in the root directory and run:
 By default, the script looks for repositories in `~/GitHub`, `~/Projects`, `~/Scripts`, and `~/Repositories`.
 
 **Custom Paths & Configuration:**
-During the double-click installation sequence, a native desktop popup menu will appear. This menu allows you to browse and select multiple directories via your OS file-picker, visually seeing what is currently being tracked. You can configure folders from entirely different root drives, and remove tracked items via a native checkbox UI.
+During the double-click installation sequence, a native desktop popup menu will appear. This menu allows you to browse and select multiple directories via your OS file-picker. You can configure folders from entirely different root drives, and remove tracked items via a native checkbox UI.
 
 Alternatively, you can override configurations on the fly by trailing the parent directories via CLI arguments:
 
@@ -62,3 +62,6 @@ To completely remove the CLI link, desktop application, and wipe your repository
 1. **macOS:** Double-click `macOS-Uninstall.command`
 2. **Linux:** Double-click `Linux-Uninstall.sh`
 3. **Terminal:** `./scripts/uninstall.sh`
+
+---
+*Built with care by Sahil Kamal for the GitHub community.*
