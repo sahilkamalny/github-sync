@@ -253,7 +253,7 @@ if [[ "$OS" == "Darwin" ]]; then
     APP_DIR="$REPO_DIR/$APP_NAME"
     
     rm -rf "$APP_DIR"
-    osacompile -o "$APP_DIR" -e "tell application \"Terminal\" to do script \"exec bash \\\"$APP_DIR/Contents/Resources/run.sh\\\"\"" >/dev/null 2>&1
+    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"exec bash \\\"$APP_DIR/Contents/Resources/run.sh\\\"\"" -e "end tell" >/dev/null 2>&1
     
     cat << 'EOF' > "$APP_DIR/Contents/Resources/run.sh"
 #!/bin/bash
