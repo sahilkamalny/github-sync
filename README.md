@@ -44,6 +44,12 @@ Ensure you are in the root directory and run:
 
 ## Usage
 
+**Launching the Application:**
+Once installed, you can trigger the synchronization process anytime by:
+1. Searching for **GitHub Sync** via macOS Spotlight Search (or Launchpad).
+2. Launching **GitHub Sync** from your Linux Desktop application menu.
+3. Typing `github-sync` from any directory in your terminal.
+
 By default, the script looks for repositories in `~/GitHub`, `~/Projects`, `~/Scripts`, and `~/Repositories`.
 
 **Custom Paths & Configuration:**

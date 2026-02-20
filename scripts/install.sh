@@ -322,7 +322,8 @@ echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━�
 echo ""
 echo -e "    You can now launch it by typing \033[1;36mgithub-sync\033[0m in your terminal,"
 if [[ "$OS" == "Darwin" ]]; then
-    echo -e "    or by double-clicking \033[1mGitHub Sync.app\033[0m in this folder."
+    echo -e "    or by double-clicking \033[1mGitHub Sync.app\033[0m in this folder,"
+    echo -e "    or by finding it via Spotlight Search/Launchpad."
 elif [[ "$OS" == "Linux" ]]; then
     echo -e "    or by launching it from your Linux application menu."
 fi
