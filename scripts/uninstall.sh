@@ -22,7 +22,7 @@ if [[ "$OS" == "Darwin" ]]; then
     ' 2>/dev/null)
     
     if [ "$response" != "Uninstall" ]; then
-        echo -e "    \033[1;33mUninstallation cancelled.\033[0m"
+        echo -e "    \n\033[1;33mUninstallation cancelled.\033[0m"
         echo ""
         exit 0
     fi
@@ -30,21 +30,21 @@ elif [[ "$OS" == "Linux" ]]; then
     if command -v zenity >/dev/null; then
         zenity --question --title="GitHub Sync Uninstaller" --text="Are you sure you want to completely uninstall GitHub Sync?\n\nThis will remove the CLI command, background configurations, and the desktop application." --ok-label="Uninstall" --cancel-label="Cancel" --icon-name=dialog-warning 2>/dev/null
         if [ $? -ne 0 ]; then
-            echo -e "    \033[1;33mUninstallation cancelled.\033[0m"
+            echo -e "    \n\033[1;33mUninstallation cancelled.\033[0m"
             echo ""
             exit 0
         fi
     elif command -v kdialog >/dev/null; then
         kdialog --warningcontinuecancel "Are you sure you want to completely uninstall GitHub Sync?\n\nThis will remove the CLI command, background configurations, and the desktop application." --title "GitHub Sync Uninstaller" --continue-label "Uninstall" 2>/dev/null
         if [ $? -ne 0 ]; then
-            echo -e "    \033[1;33mUninstallation cancelled.\033[0m"
+            echo -e "    \n\033[1;33mUninstallation cancelled.\033[0m"
             echo ""
             exit 0
         fi
     else
         read -p "Are you sure you want to uninstall GitHub Sync? (y/N) " confirm
         if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-            echo -e "    \033[1;33mUninstallation cancelled.\033[0m"
+            echo -e "    \n\033[1;33mUninstallation cancelled.\033[0m"
             echo ""
             exit 0
         fi
@@ -61,6 +61,23 @@ echo ""
 if [ -L "$HOME/.local/bin/github-sync" ]; then
     rm -f "$HOME/.local/bin/github-sync"
     echo -e "    \033[1;32m✓\033[0m Removed CLI command (\033[4m~/.local/bin/github-sync\033[0m)"
+fi
+
+if grep -q 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.zshrc" 2>/dev/null; then
+    sed -i '' '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.zshrc" 2>/dev/null || sed -i '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.zshrc" 2>/dev/null
+    echo -e "    \033[1;32m✓\033[0m Removed PATH injection (\033[4m~/.zshrc\033[0m)"
+fi
+if grep -q 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.bash_profile" 2>/dev/null; then
+    sed -i '' '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.bash_profile" 2>/dev/null || sed -i '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.bash_profile" 2>/dev/null
+    echo -e "    \033[1;32m✓\033[0m Removed PATH injection (\033[4m~/.bash_profile\033[0m)"
+fi
+if grep -q 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.bashrc" 2>/dev/null; then
+    sed -i '' '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.bashrc" 2>/dev/null || sed -i '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.bashrc" 2>/dev/null
+    echo -e "    \033[1;32m✓\033[0m Removed PATH injection (\033[4m~/.bashrc\033[0m)"
+fi
+if grep -q 'export PATH="$HOME/.local/bin:$PATH"' "$HOME/.profile" 2>/dev/null; then
+    sed -i '' '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.profile" 2>/dev/null || sed -i '/export PATH="\$HOME\/.local\/bin:\$PATH"/d' "$HOME/.profile" 2>/dev/null
+    echo -e "    \033[1;32m✓\033[0m Removed PATH injection (\033[4m~/.profile\033[0m)"
 fi
 
 # Remove Configuration

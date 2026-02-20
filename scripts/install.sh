@@ -313,11 +313,23 @@ fi
 echo ""
 
 if [[ ":$PATH:" != *":$LOCAL_BIN:"* ]]; then
-    echo -e "    \033[1;33m⚠️  Warning: $LOCAL_BIN is not in your PATH.\033[0m"
-    if [[ "$OS" == "Darwin" ]]; then
-        echo -e "         Add to ~/.zshrc or ~/.bash_profile: \033[1;37mexport PATH=\"\$HOME/.local/bin:\$PATH\"\033[0m"
+    SHELL_RC=""
+    if [[ "$SHELL" == *"zsh"* ]]; then
+        SHELL_RC="$HOME/.zshrc"
+    elif [[ "$SHELL" == *"bash"* ]]; then
+        if [[ "$OS" == "Darwin" ]]; then
+            SHELL_RC="$HOME/.bash_profile"
+        else
+            SHELL_RC="$HOME/.bashrc"
+        fi
     else
-        echo -e "         Add to ~/.bashrc or ~/.profile: \033[1;37mexport PATH=\"\$HOME/.local/bin:\$PATH\"\033[0m"
+        SHELL_RC="$HOME/.profile"
+    fi
+
+    if [ -n "$SHELL_RC" ]; then
+        echo -e "\nexport PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
+        echo -e "    \033[1;33m⚠️  $LOCAL_BIN was patched into your PATH via \033[4m$(basename "$SHELL_RC")\033[0m"
+        echo -e "       \033[3m(Please restart your terminal or run 'source $SHELL_RC' to apply)\033[0m"
     fi
     echo ""
 fi
