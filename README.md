@@ -57,7 +57,7 @@ github-sync ~/CustomClientCode ~/SecondaryBackupDrive
 
 ## Uninstallation
 
-To completely remove the CLI link, desktop applications, and wipe your repository configurations (`~/.config/github-sync`), you can utilize the provided centralized teardown scripts exactly how you installed the application:
+To completely remove the CLI link, desktop application, and wipe your repository configurations (`~/.config/github-sync`), you can utilize the provided centralized teardown scripts exactly how you installed the application:
 
 1. **macOS:** Double-click `macOS-Uninstall.command`
 2. **Linux:** Double-click `Linux-Uninstall.sh`

@@ -1,5 +1,4 @@
 #!/bin/bash
-clear
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Some Linux file managers (e.g. Nautilus) launch .sh files without a visible terminal.

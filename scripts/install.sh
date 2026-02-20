@@ -4,7 +4,7 @@
 # GitHub Sync - Installer
 # ==========================================
 
-clear
+printf '\033c'
 set -e
 
 # Detect OS
@@ -14,18 +14,15 @@ OS="$(uname -s)"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT_PATH="$REPO_DIR/scripts/github-sync.sh"
 
-echo -e "\033[1;36mStarting installation for github-sync...\033[0m"
-echo ""
-
-# ---------- Configuration Prompt ----------
 CONFIG_DIR="$HOME/.config/github-sync"
 CONFIG_FILE="$CONFIG_DIR/config"
-
 mkdir -p "$CONFIG_DIR"
 
-echo -e "\033[1;36mConfigure Repository Paths\033[0m"
-echo "By default, GitHub Sync looks in ~/GitHub, ~/Projects, ~/Scripts, and ~/Repositories."
-echo "You can specify exactly where your repositories are located."
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\033[1;36m  🚀 GitHub Sync Installer\033[0m"
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+echo -e "   \033[3mPlease interact with the configuration pop-up...\033[0m"
 echo ""
 
 USER_PATHS=""
@@ -194,73 +191,77 @@ elif [[ "$OS" == "Linux" ]]; then
 fi
 
 if [ -n "$USER_PATHS" ]; then
+    # Clear the holding screen for the final result output
+    printf '\033c'
+else
+    # Delay clear just for logic flow
+    printf '\033c'
+fi
+
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\033[1;36m  📦 Target Repositories\033[0m"
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+
+if [ -n "$USER_PATHS" ]; then
     > "$CONFIG_FILE"
     IFS=',' read -ra PATH_ARRAY <<< "$USER_PATHS"
     for p in "${PATH_ARRAY[@]}"; do
         # Trim whitespace
         p=$(echo "$p" | xargs)
         if [ -n "$p" ]; then
+            echo -e "   \033[1;32m✓\033[0m $p"
             echo "$p" >> "$CONFIG_FILE"
         fi
     done
-    echo "* Saved custom paths to $CONFIG_FILE"
-    echo ""
 else
-    echo "* Using default paths."
+    echo -e "   \033[1;32m✓\033[0m ~/GitHub"
+    echo -e "   \033[1;32m✓\033[0m ~/Projects"
+    echo -e "   \033[1;32m✓\033[0m ~/Scripts"
+    echo -e "   \033[1;32m✓\033[0m ~/Repositories"
     echo ""
+    echo -e "   \033[1;30m(Using Default Fallbacks)\033[0m"
 fi
+
+echo ""
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\033[1;36m  ⚙️  System Integrations\033[0m"
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
 
 # 1. Make script executable
 chmod +x "$SCRIPT_PATH"
-echo "* Made script executable"
+echo -e "   \033[1;32m✓\033[0m Core script marked as executable"
+
+if [ -n "$USER_PATHS" ]; then
+    echo -e "   \033[1;32m✓\033[0m Saved configuration to \033[4m~/.config/github-sync/config\033[0m"
+fi
 
 # 2. Setup CLI symlink
-# We prefer ~/.local/bin to avoid sudo requirements, falling back to /usr/local/bin if necessary.
 LOCAL_BIN="$HOME/.local/bin"
 if [ ! -d "$LOCAL_BIN" ]; then
     mkdir -p "$LOCAL_BIN"
-    echo "* Created $LOCAL_BIN"
-    # Note: user might need to add ~/.local/bin to their PATH.
+    echo -e "   \033[1;32m✓\033[0m Created local bin directory (\033[4m~/.local/bin\033[0m)"
 fi
 
 ln -sf "$SCRIPT_PATH" "$LOCAL_BIN/github-sync"
-echo "* Linked 'github-sync' into $LOCAL_BIN/"
-
-# Check if ~/.local/bin is in PATH, if not recommend adding it
-if [[ ":$PATH:" != *":$LOCAL_BIN:"* ]]; then
-    echo -e "\033[1;33m⚠️  Warning: $LOCAL_BIN is not in your PATH.\033[0m"
-    if [[ "$OS" == "Darwin" ]]; then
-        echo -e "Add this to your ~/.zshrc or ~/.bash_profile: \033[1;32mexport PATH=\"\$HOME/.local/bin:\$PATH\"\033[0m"
-    else
-        echo -e "Add this to your ~/.bashrc or ~/.profile: \033[1;32mexport PATH=\"\$HOME/.local/bin:\$PATH\"\033[0m"
-    fi
-fi
+echo -e "   \033[1;32m✓\033[0m Linked global CLI command (\033[1mgithub-sync\033[0m)"
 
 # 3. Handle OS-specific App Wrappers
 if [[ "$OS" == "Darwin" ]]; then
-    # Generate macOS Application Wrapper
     APP_NAME="GitHub Sync.app"
-    echo "* Detected macOS. Generating $APP_NAME..."
-    
-    # We create a simple AppleScript application that binds to our script.
     APP_DIR="$REPO_DIR/$APP_NAME"
-    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$SCRIPT_PATH'\"" -e "end tell"
+    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$SCRIPT_PATH'\"" -e "end tell" >/dev/null 2>&1
     
-    # Replace default AppleScript icon with native Terminal icon
     if [ -f "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" ]; then
         cp "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" "$APP_DIR/Contents/Resources/applet.icns"
         touch "$APP_DIR"
     fi
-    
-    echo "* Created macOS application at $APP_DIR"
-    echo "* You can drag this into your /Applications folder or run via Spotlight."
+    echo -e "   \033[1;32m✓\033[0m Generated macOS Application (\033[4mGitHub Sync.app\033[0m)"
 
 elif [[ "$OS" == "Linux" ]]; then
-    # Generate Linux .desktop Entry
-    echo "* Detected Linux. Generating .desktop entry..."
     DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
     mkdir -p "$DESKTOP_ENTRY_DIR"
-    
     DESKTOP_FILE="$DESKTOP_ENTRY_DIR/github-sync.desktop"
     
     cat > "$DESKTOP_FILE" <<EOF
@@ -277,10 +278,29 @@ Keywords=git;github;sync;repository;
 EOF
 
     chmod +x "$DESKTOP_FILE"
-    echo "* Created application shortcut at $DESKTOP_FILE"
+    echo -e "   \033[1;32m✓\033[0m Generated Linux Application (\033[4mgithub-sync.desktop\033[0m)"
 fi
 
 echo ""
-echo -e "\033[1;32m✅ Installation Complete!\033[0m"
-echo "You can now run 'github-sync' from anywhere."
+
+if [[ ":$PATH:" != *":$LOCAL_BIN:"* ]]; then
+    echo -e "   \033[1;33m⚠️  Warning: $LOCAL_BIN is not in your PATH.\033[0m"
+    if [[ "$OS" == "Darwin" ]]; then
+        echo -e "      Add to ~/.zshrc or ~/.bash_profile: \033[1;37mexport PATH=\"\$HOME/.local/bin:\$PATH\"\033[0m"
+    else
+        echo -e "      Add to ~/.bashrc or ~/.profile: \033[1;37mexport PATH=\"\$HOME/.local/bin:\$PATH\"\033[0m"
+    fi
+    echo ""
+fi
+
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo -e "\033[1;32m  ✅ Installation Complete!\033[0m"
+echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+echo ""
+echo -e "   You can now launch it by typing \033[1;36mgithub-sync\033[0m in your terminal,"
+if [[ "$OS" == "Darwin" ]]; then
+    echo -e "   or by double-clicking \033[1mGitHub Sync.app\033[0m in this folder."
+elif [[ "$OS" == "Linux" ]]; then
+    echo -e "   or by launching it from your Linux application menu."
+fi
 echo ""
