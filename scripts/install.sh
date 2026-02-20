@@ -252,31 +252,24 @@ if [[ "$OS" == "Darwin" ]]; then
     APP_NAME="GitHub Sync.app"
     APP_DIR="$REPO_DIR/$APP_NAME"
     
-    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$SCRIPT_PATH'; '$APP_DIR/Contents/Resources/close.sh'\"" -e "end tell" >/dev/null 2>&1
+    osacompile -o "$APP_DIR" -e "tell application \"Terminal\" to activate" >/dev/null 2>&1
     
-    cat << 'EOF' > "$APP_DIR/Contents/Resources/close.sh"
+    cat << 'EOF' > "$APP_DIR/Contents/Resources/run.sh"
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+"$REPO_DIR/scripts/github-sync.sh"
 echo ""
 read -p "   Press [Enter] to exit..."
-MY_TTY=$(tty)
-if [[ "$MY_TTY" == /dev/* ]]; then
-    nohup osascript -e "
-delay 0.5
-tell application \"Terminal\"
-    repeat with win in windows
-        repeat with t in tabs of win
-            if tty of t is \"$MY_TTY\" then
-                close t
-                return
-            end if
-        end repeat
-    end repeat
-end tell
-" >/dev/null 2>&1 &
+WIN_ID=$(osascript -e 'tell application "Terminal" to get id of front window' 2>/dev/null)
+if [ -n "$WIN_ID" ]; then
+    nohup osascript -e "delay 0.2" -e "tell application \"Terminal\" to close (every window whose id is $WIN_ID)" >/dev/null 2>&1 &
 fi
 kill -9 $PPID
 EOF
-    chmod +x "$APP_DIR/Contents/Resources/close.sh"
+    chmod +x "$APP_DIR/Contents/Resources/run.sh"
+    
+    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$APP_DIR/Contents/Resources/run.sh'\"" -e "end tell" >/dev/null 2>&1
     
     if [ -f "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" ]; then
         cp "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" "$APP_DIR/Contents/Resources/applet.icns"
