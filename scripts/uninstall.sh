@@ -92,5 +92,5 @@ echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━�
 echo -e "\033[1;32m  ✅ Uninstallation Complete.\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
-echo -e "   \033[3mBuilt with \033[1;31m❤️\033[0m\033[3m by Sahil Kamal for the GitHub community.\033[0m"
+echo -e "   \033[3mBuilt with care by Sahil Kamal for the GitHub community.\033[0m"
 echo ""
