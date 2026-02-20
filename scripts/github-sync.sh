@@ -185,4 +185,4 @@ elif [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-echo -e "\n\033[3mBuilt with care by Sahil Kamal for the GitHub community.\033[0m"
+echo -e "\n\033[3mBuilt with care by Sahil Kamal for the GitHub community.\033[0m\n"
