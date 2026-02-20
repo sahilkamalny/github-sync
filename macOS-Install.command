@@ -1,4 +1,4 @@
 #!/bin/bash
 clear
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-"$DIR/install.sh"
+"$DIR/scripts/install.sh"

@@ -37,7 +37,7 @@ Open this folder in your file manager and double-click `Linux-Install.sh`.
 Ensure you are in the root directory and run:
 
 ```bash
-./install.sh
+./scripts/install.sh
 ```
 
 **The installer will automatically:**

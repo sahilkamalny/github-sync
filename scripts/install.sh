@@ -11,7 +11,7 @@ set -e
 OS="$(uname -s)"
 
 # Define Paths
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT_PATH="$REPO_DIR/scripts/github-sync.sh"
 
 echo ""
@@ -32,20 +32,30 @@ echo ""
 USER_PATHS=""
 
 if [[ "$OS" == "Darwin" ]]; then
-    # macOS native AppleScript prompt
+    # macOS native AppleScript folder picker
     USER_PATHS=$(osascript -e '
-        tell application "System Events"
-            activate
-            set response to display dialog "Enter the absolute paths to your GitHub repository folders (comma separated).\n\nLeave blank to use defaults (~/GitHub, ~/Scripts, ~/Projects)." default answer "" with title "GitHub Sync Configuration"
-            return text returned of response
-        end tell
+        try
+            set chosen_folders to choose folder with prompt "Select your GitHub repository folders (You can select multiple by holding Command):" default location (path to home folder) multiple selections allowed true
+            set path_list to ""
+            repeat with f in chosen_folders
+                set path_list to path_list & POSIX path of f & ","
+            end repeat
+            if (length of path_list) > 0 then
+                return text 1 thru -2 of path_list
+            else
+                return ""
+            end if
+        on error
+            return ""
+        end try
     ' 2>/dev/null || echo "")
 elif [[ "$OS" == "Linux" ]]; then
-    # Linux GUI native prompts
+    # Linux GUI native folder picker
     if command -v zenity >/dev/null; then
-        USER_PATHS=$(zenity --entry --title="GitHub Sync Configuration" --text="Enter the absolute paths to your GitHub repository folders (comma separated).\n\nLeave blank to use defaults (~/GitHub, ~/Scripts, ~/Projects):" 2>/dev/null || echo "")
+        USER_PATHS=$(zenity --file-selection --directory --multiple --separator="," --title="Select your GitHub repository folders" 2>/dev/null || echo "")
     elif command -v kdialog >/dev/null; then
-        USER_PATHS=$(kdialog --inputbox "Enter the absolute paths to your GitHub repository folders (comma separated).\n\nLeave blank to use defaults (~/GitHub, ~/Scripts, ~/Projects):" --title "GitHub Sync Configuration" 2>/dev/null || echo "")
+        # kdialog does not easily support multiple directory selection in one go natively in all versions, but we provide standard text fallback if it fails.
+        USER_PATHS=$(kdialog --getexistingdirectory "$HOME" --title "Select a GitHub repository folder" 2>/dev/null || echo "")
     else
         read -p "Enter custom repository paths (comma separated) or press Enter for defaults: " USER_PATHS
     fi
