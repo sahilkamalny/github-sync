@@ -180,6 +180,227 @@ done
 echo ""
 echo -e "${BLUE}🎉  Repository sync complete.${RESET}\n"
 
+# ---------- Clone Missing Repositories ----------
+if command -v gh >/dev/null 2>&1; then
+    if gh auth status >/dev/null 2>&1; then
+        echo -e "${CYAN}🔍 Checking for missing GitHub repositories...${RESET}"
+        
+        # Construct an array of local remote URLs (normalized)
+        local_urls=()
+        for repo_dir in "${repos[@]}"; do
+            if [ -d "$repo_dir/.git" ]; then
+                url=$(cd "$repo_dir" && git remote get-url origin 2>/dev/null)
+                if [ -n "$url" ]; then
+                    # Convert HTTPS to SSH for comparison
+                    if [[ "$url" == https://github.com/* ]]; then
+                        url=$(echo "$url" | sed 's|https://github.com/|git@github.com:|')
+                    fi
+                    # Remove .git suffix
+                    url="${url%.git}"
+                    local_urls+=("$url")
+                fi
+            fi
+        done
+        
+        # Fetch remote repos from GitHub using gh
+        remote_repos=$(gh repo list --limit 1000 --json nameWithOwner,sshUrl --jq '.[] | "\(.nameWithOwner)|\(.sshUrl)"' 2>/dev/null)
+        
+        missing_repos=()
+        missing_urls=()
+        
+        while IFS="|" read -r name_with_owner ssh_url; do
+            [ -z "$name_with_owner" ] && continue
+            
+            check_url="${ssh_url%.git}"
+            
+            found=0
+            for l_url in "${local_urls[@]}"; do
+                if [ "$l_url" == "$check_url" ]; then
+                    found=1
+                    break
+                fi
+            done
+            
+            if [ $found -eq 0 ]; then
+                missing_repos+=("$name_with_owner")
+                missing_urls+=("$ssh_url")
+            fi
+        done <<< "$remote_repos"
+        
+        if [ ${#missing_repos[@]} -gt 0 ]; then
+            SELECTED_REPOS=""
+            CLONE_DIR=""
+
+            HAS_GUI=0
+            if [[ "$OS" == "Darwin" ]] && [ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ]; then
+                HAS_GUI=1
+            elif [[ "$OS" == "Linux" ]] && { [ -n "$DISPLAY" ] || [ -n "$WAYLAND_DISPLAY" ]; }; then
+                HAS_GUI=1
+            fi
+
+            if [ "$HAS_GUI" -eq 1 ]; then
+                if [[ "$OS" == "Darwin" ]]; then
+                    # macOS GUI
+                    repo_list_str=""
+                    for repo in "${missing_repos[@]}"; do
+                        # Replace internal quotes if any, just to be extremely safe, though unlikely in repo names
+                        repo_clean="${repo//\"/\\\"}"
+                        repo_list_str+="\"$repo_clean\","
+                    done
+                    repo_list_str="${repo_list_str%,}"
+                    
+                    SELECTED_REPOS=$(osascript -e "
+                        try
+                            set repoList to {$repo_list_str}
+                            set chosen to choose from list repoList with prompt \"Select repositories to clone:\" with title \"Clone Missing Repositories\" with multiple selections allowed
+                            if chosen is not false then
+                                set AppleScript's text item delimiters to \"|\"
+                                return chosen as text
+                            else
+                                return \"\"
+                            end if
+                        on error
+                            return \"\"
+                        end try
+                    " 2>/dev/null || echo "")
+                    
+                    if [ -n "$SELECTED_REPOS" ]; then
+                        dir_list_str=""
+                        for dir in "${BASE_DIRS[@]}"; do
+                            dir_clean="${dir//\"/\\\"}"
+                            dir_list_str+="\"$dir_clean\","
+                        done
+                        dir_list_str="${dir_list_str%,}"
+                        
+                        CLONE_DIR=$(osascript -e "
+                            try
+                                set dirList to {$dir_list_str}
+                                set chosen to choose from list dirList with prompt \"Select destination for cloned repositories:\" with title \"Clone Destination\" without multiple selections allowed
+                                if chosen is not false then
+                                    return item 1 of chosen
+                                else
+                                    return \"\"
+                                end if
+                            on error
+                                return \"\"
+                            end try
+                        " 2>/dev/null || echo "")
+                    fi
+                    
+                elif [[ "$OS" == "Linux" ]]; then
+                    # Linux GUI
+                    if command -v zenity >/dev/null; then
+                        list_args=()
+                        for repo in "${missing_repos[@]}"; do
+                            list_args+=(FALSE "$repo")
+                        done
+                        
+                        selected=$(zenity --list --checklist --title="Clone Missing Repositories" --text="Select repositories to clone:" --column="Clone" --column="Repository" "${list_args[@]}" --separator="|" 2>/dev/null)
+                        if [ -n "$selected" ]; then
+                            SELECTED_REPOS="$selected"
+                            
+                            dir_args=()
+                            for dir in "${BASE_DIRS[@]}"; do
+                                dir_args+=(FALSE "$dir")
+                            done
+                            dir_args[0]="TRUE"
+                            
+                            CLONE_DIR=$(zenity --list --radiolist --title="Clone Destination" --text="Select destination for cloned repositories:" --column="Select" --column="Directory" "${dir_args[@]}" 2>/dev/null)
+                        fi
+                    elif command -v kdialog >/dev/null; then
+                        list_args=()
+                        for repo in "${missing_repos[@]}"; do
+                            list_args+=("$repo" "$repo" "off")
+                        done
+                        
+                        selected=$(kdialog --checklist "Select repositories to clone:" "${list_args[@]}" --title "Clone Missing Repositories" --separator="|" 2>/dev/null)
+                        if [ -n "$selected" ]; then
+                            SELECTED_REPOS=$(echo "$selected" | tr -d '"')
+                            
+                            dir_args=()
+                            for dir in "${BASE_DIRS[@]}"; do
+                                dir_args+=("$dir" "$dir" "off")
+                            done
+                            dir_args[2]="on"
+                            
+                            CLONE_DIR=$(kdialog --radiolist "Select destination for cloned repositories:" "${dir_args[@]}" --title "Clone Destination" 2>/dev/null)
+                            CLONE_DIR=$(echo "$CLONE_DIR" | tr -d '"')
+                        fi
+                    else
+                        HAS_GUI=0
+                    fi
+                fi
+            fi
+            
+            # Fallback to terminal prompt if no GUI tool was available
+            if [ "$HAS_GUI" -eq 0 ]; then
+                echo -e "${YELLOW}You have ${#missing_repos[@]} repository(ies) on GitHub that are not cloned locally:${RESET}"
+                for i in "${!missing_repos[@]}"; do
+                    echo "  $((i+1))) ${missing_repos[$i]}"
+                done
+                echo ""
+                if [ -t 0 ]; then
+                    read -p "Enter comma-separated numbers to clone (or press Enter to skip): " -r choices
+                    if [ -n "$choices" ]; then
+                        IFS=',' read -ra CH_ARR <<< "$choices"
+                        for c in "${CH_ARR[@]}"; do
+                            # cross-platform trim
+                            c=$(echo "$c" | awk '{$1=$1};1')
+                            if [[ "$c" =~ ^[0-9]+$ ]] && [ "$c" -ge 1 ] && [ "$c" -le "${#missing_repos[@]}" ]; then
+                                SELECTED_REPOS+="${missing_repos[$((c-1))]}|"
+                            fi
+                        done
+                        SELECTED_REPOS="${SELECTED_REPOS%|}"
+                        
+                        if [ -n "$SELECTED_REPOS" ]; then
+                            CLONE_DIR="${BASE_DIRS[0]}"
+                            if [ ${#BASE_DIRS[@]} -gt 1 ]; then
+                                echo -e "${CYAN}Available directories for cloning:${RESET}"
+                                for i in "${!BASE_DIRS[@]}"; do
+                                    echo "  $((i+1))) ${BASE_DIRS[$i]}"
+                                done
+                                read -p "Select a directory (1-${#BASE_DIRS[@]}) [Default: 1]: " -r dir_choice
+                                echo ""
+                                if [[ "$dir_choice" =~ ^[0-9]+$ ]] && [ "$dir_choice" -ge 1 ] && [ "$dir_choice" -le "${#BASE_DIRS[@]}" ]; then
+                                    CLONE_DIR="${BASE_DIRS[$((dir_choice-1))]}"
+                                fi
+                            fi
+                        fi
+                    fi
+                fi
+            fi
+
+            if [ -n "$SELECTED_REPOS" ] && [ -n "$CLONE_DIR" ]; then
+                echo ""
+                mkdir -p "$CLONE_DIR"
+                echo -e "${BLUE}⬇ Cloning selected repositories into $CLONE_DIR...${RESET}"
+                
+                IFS='|' read -ra SEL_ARR <<< "$SELECTED_REPOS"
+                for sel_repo in "${SEL_ARR[@]}"; do
+                    target_url=""
+                    for i in "${!missing_repos[@]}"; do
+                        if [ "${missing_repos[$i]}" == "$sel_repo" ]; then
+                            target_url="${missing_urls[$i]}"
+                            break
+                        fi
+                    done
+                    
+                    if [ -n "$target_url" ]; then
+                        echo -e "${CYAN}Cloning $target_url...${RESET}"
+                        (cd "$CLONE_DIR" && git clone "$target_url")
+                    fi
+                done
+                
+                echo -e "${GREEN}✅ Cloning complete.${RESET}\n"
+            else
+                echo -e "${YELLOW}ℹ️  No repositories cloned.${RESET}\n"
+            fi
+        else
+            echo -e "${GREEN}✅ All your remote repositories are already cloned locally.${RESET}\n"
+        fi
+    fi
+fi
+
 if [[ "$OS" == "Darwin" ]]; then
     osascript -e 'display notification "GitHub repository sync complete." with title "Sync Repositories"'
 elif [[ "$OS" == "Linux" ]]; then

@@ -263,22 +263,20 @@ if [[ "$OS" == "Darwin" ]]; then
     rm -rf "$APP_DIR"
     osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"exec bash \\\"$APP_DIR/Contents/Resources/run.sh\\\"\"" -e "end tell" >/dev/null 2>&1
     
-    cat << 'EOF' > "$APP_DIR/Contents/Resources/run.sh"
+    cat << EOF > "$APP_DIR/Contents/Resources/run.sh"
 #!/bin/bash
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 export APP_GUI=1
 "$REPO_DIR/scripts/github-sync.sh"
 
 echo ""
 read -p "Press [Enter] to exit..."
 
-WIN_ID=$(osascript -e 'tell application "Terminal" to get id of front window' 2>/dev/null)
-if [ -n "$WIN_ID" ]; then
-    osascript -e "tell application \"Terminal\" to set normal text color of (every window whose id is $WIN_ID) to background color of (every window whose id is $WIN_ID)" >/dev/null 2>&1
-    nohup bash -c "sleep 0.1; osascript -e 'tell application \"Terminal\" to close (every window whose id is $WIN_ID)'" >/dev/null 2>&1 </dev/null &
+WIN_ID=\$(osascript -e 'tell application "Terminal" to get id of front window' 2>/dev/null)
+if [ -n "\$WIN_ID" ]; then
+    osascript -e "tell application \\"Terminal\\" to set normal text color of (every window whose id is \$WIN_ID) to background color of (every window whose id is \$WIN_ID)" >/dev/null 2>&1
+    nohup bash -c "sleep 0.1; osascript -e 'tell application \\"Terminal\\" to close (every window whose id is \$WIN_ID)'" >/dev/null 2>&1 </dev/null &
 fi
-exec kill -9 $$
+exec kill -9 \$\$
 EOF
     chmod +x "$APP_DIR/Contents/Resources/run.sh"
     
