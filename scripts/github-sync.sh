@@ -4,7 +4,7 @@
 # Modern GitHub Repository Sync Utility
 # ==========================================
 
-clear
+printf '\033c'
 
 CONFIG_DIR="$HOME/.config/github-sync"
 CONFIG_FILE="$CONFIG_DIR/config"

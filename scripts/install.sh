@@ -251,7 +251,7 @@ echo -e "   \033[1;32m✓\033[0m Linked global CLI command (\033[1mgithub-sync\0
 if [[ "$OS" == "Darwin" ]]; then
     APP_NAME="GitHub Sync.app"
     APP_DIR="$REPO_DIR/$APP_NAME"
-    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$SCRIPT_PATH'\"" -e "end tell" >/dev/null 2>&1
+    osacompile -o "$APP_DIR" -e "tell application \"Terminal\"" -e "activate" -e "do script \"'$SCRIPT_PATH'; echo ''; read -p '   Press [Enter] to exit...'; osascript -e 'tell application \\\"Terminal\\\" to close front window' >/dev/null 2>&1\"" -e "end tell" >/dev/null 2>&1
     
     if [ -f "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" ]; then
         cp "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" "$APP_DIR/Contents/Resources/applet.icns"
