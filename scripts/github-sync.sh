@@ -175,7 +175,7 @@ for i in "${!repo_paths[@]}"; do
 done
 
 echo ""
-echo -e "${BLUE}🎉  Repository sync complete.${RESET}"
+echo -e "${BLUE}🎉  Repository sync complete.${RESET}\n"
 
 if [[ "$OS" == "Darwin" ]]; then
     osascript -e 'display notification "GitHub repository sync complete." with title "Sync Repositories"'

@@ -304,3 +304,5 @@ elif [[ "$OS" == "Linux" ]]; then
     echo -e "   or by launching it from your Linux application menu."
 fi
 echo ""
+echo -e "   \033[3mBuilt with \033[1;31m❤️\033[0m\033[3m by Sahil Kamal for the GitHub community.\033[0m"
+echo ""
