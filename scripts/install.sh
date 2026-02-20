@@ -265,7 +265,7 @@ WIN_ID=$(osascript -e 'tell application "Terminal" to get id of front window' 2>
 if [ -n "$WIN_ID" ]; then
     nohup bash -c "sleep 0.5; osascript -e 'tell application \"Terminal\" to close (every window whose id is $WIN_ID)'" >/dev/null 2>&1 </dev/null &
 fi
-kill -9 $PPID
+kill -9 $$
 EOF
     chmod +x "$APP_DIR/Contents/Resources/run.sh"
     
