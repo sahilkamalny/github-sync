@@ -159,7 +159,8 @@ for i in "${!repo_paths[@]}"; do
     after_commit=$(git rev-parse HEAD 2>/dev/null)
     
     if [ $RESULT -ne 0 ]; then
-        echo -e "... ${YELLOW}⚠️  pull failed${RESET}"
+        git rebase --abort 2>/dev/null || true
+        echo -e "... ${YELLOW}⚠️  pull failed (rebase aborted to protect repo)${RESET}"
     elif [ "${before_commits[$i]}" = "$after_commit" ]; then
         echo -e "... ${GREEN}✅ already up to date${RESET}"
     else
