@@ -4,7 +4,7 @@
 # GitHub Sync - Installer
 # ==========================================
 
-clear
+printf '\033[2J\033[3J\033[H'
 set -e
 
 # Detect OS
@@ -230,10 +230,10 @@ fi
 
 if [ -n "$USER_PATHS" ]; then
     # Clear the holding screen for the final result output
-    clear
+    printf '\033[2J\033[3J\033[H'
 else
     # Delay clear just for logic flow
-    clear
+    printf '\033[2J\033[3J\033[H'
 fi
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
