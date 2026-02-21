@@ -10,7 +10,7 @@ CONFIG_DIR="$HOME/.config/github-sync"
 CONFIG_FILE="$CONFIG_DIR/config"
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  🔄 GitHub Sync\033[0m"
+echo -e "\033[1;36m  🐙 GitHub Sync\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
@@ -64,7 +64,7 @@ if [ "$total" -eq 0 ]; then
 fi
 
 # ---------- Header ----------
-echo -e "${BLUE}🚀  Syncing $total repositories concurrently...${RESET}"
+echo -e "    ${BLUE}🚀  Syncing $total repositories concurrently...${RESET}"
 echo ""
 
 # Arrays to track state (Bash 3 compatible)
@@ -180,7 +180,7 @@ for i in "${!repo_paths[@]}"; do
 done
 
 echo ""
-echo -e "${BLUE}🔄  Repository sync complete.${RESET}\n"
+echo -e "    ${BLUE}🔄  Repository sync complete.${RESET}\n"
 
 # ---------- Clone Missing Repositories ----------
 if command -v gh >/dev/null 2>&1; then
