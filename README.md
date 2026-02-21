@@ -85,4 +85,4 @@ To completely remove the CLI link, desktop application, and wipe your repository
 3. **Terminal:** `./scripts/uninstall.sh`
 
 #
-    ~ ❯ *Built with care by Sahil Kamal for the GitHub community.*
+   ~ ❯ *Built with care by Sahil Kamal for the GitHub community.*
