@@ -266,7 +266,7 @@ else
 fi
 echo ""
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  📦 Target Repositories\033[0m"
+echo -e "\033[1;36m  📁 Target Repositories\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
@@ -277,12 +277,12 @@ if [ -n "$USER_PATHS" ]; then
         # Trim whitespace
         p=$(echo "$p" | xargs)
         if [ -n "$p" ]; then
-            echo -e "    \033[1;32m✓\033[0m $p"
+            echo -e "    \033[1;34m○\033[0m $p"
             echo "$p" >> "$CONFIG_FILE"
         fi
     done
 else
-    echo -e "    \033[1;32m✓\033[0m ~/GitHub"
+    echo -e "    \033[1;34m○\033[0m ~/GitHub"
     echo ""
     echo -e "    \033[1;30m(Using Default Configuration)\033[0m"
     > "$CONFIG_FILE"
