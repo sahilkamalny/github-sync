@@ -118,6 +118,18 @@ if [ -d "$HOME/Applications/GitHub Sync.app" ]; then
     echo -e "    \033[1;32m✓\033[0m Removed macOS App from user (\033[4m~/Applications\033[0m)"
 fi
 
+# Remove Mac App if user dragged it to their Desktop
+if [ -d "$HOME/Desktop/GitHub Sync.app" ]; then
+    rm -rf "$HOME/Desktop/GitHub Sync.app"
+    echo -e "    \033[1;32m✓\033[0m Removed macOS App from (\033[4m~/Desktop\033[0m)"
+fi
+
+# Remove Linux desktop entry if user dragged it to their Desktop
+if [ -f "$HOME/Desktop/github-sync.desktop" ]; then
+    rm -f "$HOME/Desktop/github-sync.desktop"
+    echo -e "    \033[1;32m✓\033[0m Removed Linux App entry from (\033[4m~/Desktop\033[0m)"
+fi
+
 # Remove Linux Data Dir if exists in repo dir
 if [ -d "$DIR/GitHub Sync" ]; then
     rm -rf "$DIR/GitHub Sync"
