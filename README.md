@@ -68,7 +68,7 @@ Once installed, you can trigger the synchronization process anytime by:
 By default, the script looks for repositories in `~/GitHub`.
 
 **Headless CLI Mode:**
-If you wish to run the synchronization, installation, or uninstallation scripts in a purely headless Terminal environment (bypassing all graphical Pop-up UIs), simply append the `--cli` or `--headless` flag to your command:
+If you wish to run the synchronization, installation, or uninstallation scripts in a purely headless Terminal environment (bypassing all graphical Pop-up UIs), simply append the `--cli` (or `--headless`) flag to your command:
 
 ```bash
 ghsync --cli
@@ -93,4 +93,4 @@ To completely remove the CLI link, desktop application, and wipe your repository
 3. **Terminal:** `./scripts/uninstall.sh`
 
 #
-*© 2026 Sahil Kamal.*
+*©  2026 Sahil Kamal.*

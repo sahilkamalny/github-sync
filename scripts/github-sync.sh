@@ -148,8 +148,7 @@ done
 printf "\r\033[K"
 
 # Process and print results sequentially for a clean UI
-PAD=""
-[ "$APP_GUI" == "1" ] && PAD="    "
+PAD="    "
 
 display_count=1
 for i in "${!repo_paths[@]}"; do
@@ -243,6 +242,7 @@ if command -v gh >/dev/null 2>&1; then
         # Clear the spinner line
         printf "\r\033[K"
         echo -e "    ${CYAN}✓  Fetched repository list from GitHub.${RESET}"
+        echo ""
         
         remote_repos=$(cat /tmp/gh_repo_list.txt)
         rm -f /tmp/gh_repo_list.txt
@@ -379,7 +379,12 @@ if command -v gh >/dev/null 2>&1; then
             
             # Fallback to terminal prompt if no GUI tool was available
             if [ "$HAS_GUI" -eq 0 ]; then
-                echo -e "    ${YELLOW}You have ${#missing_repos[@]} repository(ies) on GitHub that are not cloned locally:${RESET}"
+                if [ "${#missing_repos[@]}" -eq 1 ]; then
+                    echo -e "    ${YELLOW}You have 1 repository on GitHub that is not cloned locally:${RESET}"
+                else
+                    echo -e "    ${YELLOW}You have ${#missing_repos[@]} repositories on GitHub that are not cloned locally:${RESET}"
+                fi
+                echo ""
                 for i in "${!missing_repos[@]}"; do
                     echo "      $((i+1))) ${missing_repos[$i]}"
                 done
@@ -463,4 +468,4 @@ elif [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-echo -e "\n    © 2026 Sahil Kamal.\n"
+echo -e "\n    ©  2026 Sahil Kamal.\n"

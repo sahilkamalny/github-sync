@@ -23,9 +23,6 @@ echo -e "\033[1;36m  🚀 GitHub Sync Installer\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
-echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
-echo ""
-
 USER_PATHS=""
 if [ -f "$CONFIG_FILE" ]; then
     USER_PATHS=$(paste -sd ',' "$CONFIG_FILE" 2>/dev/null || echo "")
@@ -53,6 +50,8 @@ fi
 
 if [ "$HAS_GUI" -eq 1 ]; then
     if [[ "$OS" == "Darwin" ]]; then
+        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
+        echo ""
         # macOS native AppleScript stateful menu loop
         APPLESCRIPT_OPTS=("-e" "set userPaths to {}")
         if [ -n "$USER_PATHS" ]; then
@@ -123,6 +122,8 @@ if [ "$HAS_GUI" -eq 1 ]; then
         fi
         
     if command -v zenity >/dev/null; then
+        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
+        echo ""
         while true; do
             path_string=""
             for p in "${user_paths_array[@]}"; do
@@ -177,6 +178,8 @@ if [ "$HAS_GUI" -eq 1 ]; then
             fi
         done
     elif command -v kdialog >/dev/null; then
+        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
+        echo ""
         while true; do
             path_string=""
             for p in "${user_paths_array[@]}"; do
@@ -364,7 +367,15 @@ EOF
     echo -e "    \033[1;32m✓\033[0m ${ACTION_STR} Linux Application (\033[4mgithub-sync.desktop\033[0m)"
 fi
 
-if [[ ":$PATH:" != *":$LOCAL_BIN:"* ]]; then
+PATH_INJECTED=0
+for rc in "$HOME/.zshrc" "$HOME/.bash_profile" "$HOME/.bashrc" "$HOME/.profile"; do
+    if [ -f "$rc" ] && grep -q 'export PATH="$HOME/.local/bin:$PATH"' "$rc" 2>/dev/null; then
+        PATH_INJECTED=1
+        break
+    fi
+done
+
+if [ "$PATH_INJECTED" -eq 0 ]; then
     SHELL_RC=""
     if [[ "$SHELL" == *"zsh"* ]]; then
         SHELL_RC="$HOME/.zshrc"
@@ -410,5 +421,5 @@ elif [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-echo -e "\n    © 2026 Sahil Kamal."
+echo -e "\n    ©  2026 Sahil Kamal."
 echo ""

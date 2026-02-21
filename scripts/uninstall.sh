@@ -10,7 +10,8 @@ echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━�
 echo ""
 
 if [ ! -f "$HOME/.local/bin/github-sync" ] && [ ! -d "$HOME/.config/github-sync" ]; then
-    echo -e "    \033[1;33mGitHub Sync is not currently installed on this system.\033[0m"
+    echo -e "    \033[1;33m×  GitHub Sync is not currently installed on this system.\033[0m"
+    echo -e "\n\n    ©  2026 Sahil Kamal."
     echo ""
     exit 0
 fi
@@ -18,8 +19,6 @@ fi
 # Define Colors
 CYAN="\033[1;36m"
 RESET="\033[0m"
-
-echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
 
 FORCE_CLI=0
 for arg in "$@"; do
@@ -40,6 +39,7 @@ fi
 # Native Uninstallation Confirmation
 if [ "$HAS_GUI" -eq 1 ]; then
     if [[ "$OS" == "Darwin" ]]; then
+    echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
     response=$(osascript -e '
         try
             set theResult to display dialog "Are you sure you want to completely uninstall GitHub Sync?\n\nThis will remove the CLI command, background configurations, and the desktop application." buttons {"Cancel", "Uninstall"} default button "Cancel" with title "GitHub Sync Uninstaller" with icon caution
@@ -50,22 +50,24 @@ if [ "$HAS_GUI" -eq 1 ]; then
     ' 2>/dev/null)
     
     if [ "$response" != "Uninstall" ]; then
-        echo -e "\n    \033[1;33mUninstallation cancelled.\033[0m"
+        echo -e "\n    \033[1;33m×  Uninstallation cancelled.\033[0m"
         echo ""
         exit 0
     fi
 elif [[ "$OS" == "Linux" ]]; then
     if command -v zenity >/dev/null; then
+        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
         zenity --question --title="GitHub Sync Uninstaller" --text="Are you sure you want to completely uninstall GitHub Sync?\n\nThis will remove the CLI command, background configurations, and the desktop application." --ok-label="Uninstall" --cancel-label="Cancel" --icon-name=dialog-warning 2>/dev/null
         if [ $? -ne 0 ]; then
-            echo -e "\n    \033[1;33mUninstallation cancelled.\033[0m"
+            echo -e "\n    \033[1;33m×  Uninstallation cancelled.\033[0m"
             echo ""
             exit 0
         fi
     elif command -v kdialog >/dev/null; then
+        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
         kdialog --warningcontinuecancel "Are you sure you want to completely uninstall GitHub Sync?\n\nThis will remove the CLI command, background configurations, and the desktop application." --title "GitHub Sync Uninstaller" --continue-label "Uninstall" 2>/dev/null
         if [ $? -ne 0 ]; then
-            echo -e "\n    \033[1;33mUninstallation cancelled.\033[0m"
+            echo -e "\n    \033[1;33m×  Uninstallation cancelled.\033[0m"
             echo ""
             exit 0
         fi
@@ -78,7 +80,7 @@ fi
 if [ "$HAS_GUI" -eq 0 ]; then
     read -p "$(echo -e "    ${CYAN}Are you sure you want to uninstall GitHub Sync? (y/n) ${RESET}")" confirm
     if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-        echo -e "\n    \033[1;33mUninstallation cancelled.\033[0m"
+        echo -e "\n    \033[1;33m×  Uninstallation cancelled.\033[0m"
         echo ""
         exit 0
     fi
@@ -167,7 +169,7 @@ echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━�
 echo -e "\033[1;32m  ✅ Uninstallation Complete.\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
-echo -e "    GitHub Sync has been successfully removed from your system."
+echo -e "    ${CYAN}GitHub Sync has been successfully removed from your system.${RESET}"
 echo ""
 
 if [[ "$OS" == "Darwin" ]]; then
@@ -178,5 +180,5 @@ elif [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-echo -e "\n    © 2026 Sahil Kamal."
+echo -e "\n    ©  2026 Sahil Kamal."
 echo ""
