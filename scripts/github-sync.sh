@@ -10,7 +10,7 @@ CONFIG_DIR="$HOME/.config/github-sync"
 CONFIG_FILE="$CONFIG_DIR/config"
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  ⇄ GitHub Sync\033[0m"
+echo -e "\033[1;36m  ☯︎  GitHub Sync\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
@@ -69,12 +69,13 @@ total=${#repos[@]}
 
 # Safety check
 if [ "$total" -eq 0 ]; then
-    echo -e "${YELLOW}⚠️  No Git repositories found in configured directories.${RESET}"
+    echo -e "    ${YELLOW}△  No Git repositories found in configured directories.${RESET}"
+    echo -e "\n\n    ©  2026 Sahil Kamal\n"
     exit 0
 fi
 
 # ---------- Header ----------
-echo -e "    ${CYAN}Syncing $total repositories...${RESET}"
+echo -e "    ${BLUE}↻  Syncing $total repositories...${RESET}"
 echo ""
 
 # Arrays to track state (Bash 3 compatible)
@@ -154,15 +155,15 @@ display_count=1
 for i in "${!repo_paths[@]}"; do
     repo="${repo_paths[$i]}"
     REPO_NAME=$(basename "$repo")
-    printf "${PAD}[%d/%d] %s " "$display_count" "$total" "$REPO_NAME"
+    printf "${PAD}${BLUE}[%d/%d]${RESET} %s " "$display_count" "$total" "$REPO_NAME"
     ((display_count++))
     
     if [ "${statuses[$i]}" -eq 2 ]; then
-        echo -e "... ${YELLOW}⚠️  Unable to access repository${RESET}"
+        echo -e "${BLUE}...${RESET} ${YELLOW}×  Unable to access repository${RESET}"
         continue
     elif [ "${statuses[$i]}" -eq 1 ]; then
         # We didn't save the modified file count, so we just print skipped
-        echo -e "... ${YELLOW}⚠️  modified files — sync skipped${RESET}"
+        echo -e "${BLUE}...${RESET} ${YELLOW}△  modified files — sync skipped${RESET}"
         continue
     fi
     
@@ -175,13 +176,13 @@ for i in "${!repo_paths[@]}"; do
     
     if [ $RESULT -ne 0 ]; then
         git rebase --abort 2>/dev/null || true
-        echo -e "... ${YELLOW}⚠️  pull failed (rebase aborted to protect repo)${RESET}"
+        echo -e "${BLUE}...${RESET} ${YELLOW}×  pull failed (rebase aborted to protect repo)${RESET}"
     elif [ "${before_commits[$i]}" = "$after_commit" ]; then
-        echo -e "... ${GREEN}✅ already up to date${RESET}"
+        echo -e "${BLUE}...${RESET} ${GREEN}✓ up to date${RESET}"
     else
         commit_count=$(git rev-list --count "${before_commits[$i]}..$after_commit" 2>/dev/null || echo "1")
         file_count=$(git diff --name-only "${before_commits[$i]}..$after_commit" 2>/dev/null | wc -l | tr -d ' ')
-        echo -e "... ${CYAN}↓ pulled $commit_count commit(s) affecting $file_count file(s) — now synced${RESET}"
+        echo -e "${BLUE}...${RESET} ${CYAN}↓ pulled $commit_count commit(s) affecting $file_count file(s) — now synced${RESET}"
     fi
 
     # Clean up temp files
@@ -196,16 +197,16 @@ if command -v gh >/dev/null 2>&1; then
     if gh auth status >/dev/null 2>&1; then
         clone_choice="y"
         if [ -t 0 ]; then
-            echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-            echo -e "${CYAN}  🔍 Missing Repositories${RESET}"
-            echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+            echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+            echo -e "${CYAN}  ❏  Missing Repositories${RESET}"
+            echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
             printf "\n    Would you like to check for and clone missing remote repositories? [y/n]: "
             read -r clone_choice
             echo ""
         fi
         
         if [[ ! "$clone_choice" =~ ^[Yy]$ ]]; then
-            echo -e "    ${YELLOW}■  No repositories cloned.${RESET}\n"
+            echo -e "    ${BLUE}No repositories cloned.${RESET}\n"
         else
         # Construct an array of local remote URLs (normalized/lowercase)
         local_urls=()
@@ -242,7 +243,6 @@ if command -v gh >/dev/null 2>&1; then
         # Clear the spinner line
         printf "\r\033[K"
         echo -e "    ${CYAN}✓  Fetched repository list from GitHub.${RESET}"
-        echo ""
         
         remote_repos=$(cat /tmp/gh_repo_list.txt)
         rm -f /tmp/gh_repo_list.txt
@@ -441,17 +441,17 @@ if command -v gh >/dev/null 2>&1; then
                         repo_name=$(basename "$target_url" .git)
                         printf "    [%d/%d] %s " "$display_count" "${#SEL_ARR[@]}" "$repo_name"
                         if (cd "$CLONE_DIR" && git clone -q "$target_url" >/dev/null 2>&1); then
-                            echo -e "... ${GREEN}✅ cloned${RESET}"
+                            echo -e "... ${GREEN}✓ cloned${RESET}"
                         else
-                            echo -e "... ${YELLOW}⚠️  failed to clone${RESET}"
+                            echo -e "... ${YELLOW}×  failed to clone${RESET}"
                         fi
                     fi
                     ((display_count++))
                 done
                 
-                echo -e "\n    ${GREEN}✓  Cloning complete.${RESET}\n"
+                echo -e "\n    ${GREEN}↓  Cloning complete.${RESET}\n"
             else
-                echo -e "\n    ${YELLOW}■  No repositories cloned.${RESET}\n"
+                echo -e "\n    ${BLUE}No repositories cloned.${RESET}\n"
             fi
         else
             echo -e "\n    ${GREEN}✓  All your remote repositories are already cloned locally.${RESET}\n"
@@ -468,4 +468,4 @@ elif [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-echo -e "\n    ©  2026 Sahil Kamal.\n"
+echo -e "\n    ©  2026 Sahil Kamal\n"

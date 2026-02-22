@@ -19,7 +19,7 @@ CONFIG_FILE="$CONFIG_DIR/config"
 mkdir -p "$CONFIG_DIR"
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  🚀 GitHub Sync Installer\033[0m"
+echo -e "\033[1;36m  ☯︎  GitHub Sync Installer\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
@@ -50,8 +50,7 @@ fi
 
 if [ "$HAS_GUI" -eq 1 ]; then
     if [[ "$OS" == "Darwin" ]]; then
-        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
-        echo ""
+        echo -ne "    \033[3mPlease interact with the pop-up...\033[0m"
         # macOS native AppleScript stateful menu loop
         APPLESCRIPT_OPTS=("-e" "set userPaths to {}")
         if [ -n "$USER_PATHS" ]; then
@@ -65,7 +64,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
         repeat
             set pathString to ""
             repeat with p in userPaths
-                set pathString to pathString & "• " & p & return
+                set pathString to pathString & "∘ " & p & return
             end repeat
             if pathString is "" then set pathString to "(None selected. Default configuration will be applied.)"
             
@@ -111,6 +110,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
             return ""
         end if
     ' 2>/dev/null || echo "")
+        echo -ne "\r\033[K"
     elif [[ "$OS" == "Linux" ]]; then
         # Linux GUI native stateful menu loop
         user_paths_array=()
@@ -122,12 +122,11 @@ if [ "$HAS_GUI" -eq 1 ]; then
         fi
         
     if command -v zenity >/dev/null; then
-        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
-        echo ""
+        echo -ne "    \033[3mPlease interact with the pop-up...\033[0m"
         while true; do
             path_string=""
             for p in "${user_paths_array[@]}"; do
-                path_string+="• $p\n"
+                path_string+="∘ $p\n"
             done
             if [ -z "$path_string" ]; then
                 path_string="(None selected. Default configuration will be applied.)"
@@ -177,13 +176,13 @@ if [ "$HAS_GUI" -eq 1 ]; then
                 break # Window closed
             fi
         done
+        echo -ne "\r\033[K"
     elif command -v kdialog >/dev/null; then
-        echo -e "    \033[3mPlease interact with the configuration pop-up...\033[0m"
-        echo ""
+        echo -ne "    \033[3mPlease interact with the pop-up...\033[0m"
         while true; do
             path_string=""
             for p in "${user_paths_array[@]}"; do
-                path_string+="• $p\n"
+                path_string+="∘ $p\n"
             done
             if [ -z "$path_string" ]; then
                 path_string="(None selected. Default configuration will be applied.)"
@@ -222,6 +221,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
                 break
             fi
         done
+        echo -ne "\r\033[K"
     else
         HAS_GUI=0
     fi
@@ -253,20 +253,20 @@ else
 fi
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  🚀 GitHub Sync Installer\033[0m"
+echo -e "\033[1;36m  ☯︎  GitHub Sync Installer\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
 if [ -f "$HOME/.local/bin/github-sync" ]; then
-    echo -e "    \033[1;33m■  GitHub Sync is already installed. Updating existing installation...\033[0m"
+    echo -e "    \033[1;36mGitHub Sync\033[0m is already installed. Updating configuration..."
     ACTION_STR="Updated"
 else
-    echo -e "    \033[3mConfiguration saved. Preparing your synchronization environment...\033[0m"
+    echo -e "    Configuration saved. Installing \033[1;36mGitHub Sync\033[0m..."
     ACTION_STR="Generated"
 fi
 echo ""
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  📁 Target Repositories\033[0m"
+echo -e "\033[1;36m  ❏  Target Repositories\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
@@ -277,12 +277,12 @@ if [ -n "$USER_PATHS" ]; then
         # Trim whitespace
         p=$(echo "$p" | xargs)
         if [ -n "$p" ]; then
-            echo -e "    \033[1;34m○\033[0m $p"
+            echo -e "    \033[1;34m∘\033[0m $p"
             echo "$p" >> "$CONFIG_FILE"
         fi
     done
 else
-    echo -e "    \033[1;34m○\033[0m $HOME/GitHub"
+    echo -e "    \033[1;34m∘\033[0m $HOME/GitHub"
     echo ""
     echo -e "    \033[1;30m(Using Default Configuration)\033[0m"
     > "$CONFIG_FILE"
@@ -291,7 +291,7 @@ fi
 
 echo ""
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;36m  ⚙️  System Integrations\033[0m"
+echo -e "\033[1;36m  ❏  System Integrations\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 
@@ -299,20 +299,20 @@ echo ""
 chmod +x "$SCRIPT_PATH"
 chmod +x "$REPO_DIR/scripts/install.sh"
 chmod +x "$REPO_DIR/scripts/uninstall.sh"
-echo -e "    \033[1;32m✓\033[0m Core scripts made executable"
+echo -e "    \033[1;32m∘\033[0m Core scripts made executable"
 
-echo -e "    \033[1;32m✓\033[0m Saved configuration to \033[4m~/.config/github-sync/config\033[0m"
+echo -e "    \033[1;32m∘\033[0m Saved configuration to \033[4m~/.config/github-sync/config\033[0m"
 
 # 2. Setup CLI symlink
 LOCAL_BIN="$HOME/.local/bin"
 if [ ! -d "$LOCAL_BIN" ]; then
     mkdir -p "$LOCAL_BIN"
-    echo -e "    \033[1;32m✓\033[0m Created local bin directory (\033[4m~/.local/bin\033[0m)"
+    echo -e "    \033[1;32m∘\033[0m Created local bin directory (\033[4m~/.local/bin\033[0m)"
 fi
 
 ln -sf "$SCRIPT_PATH" "$LOCAL_BIN/github-sync"
 ln -sf "$SCRIPT_PATH" "$LOCAL_BIN/ghsync"
-echo -e "    \033[1;32m✓\033[0m Linked global CLI commands (\033[1mgithub-sync\033[0m, \033[1mghsync\033[0m)"
+echo -e "    \033[1;32m∘\033[0m Linked global CLI commands (\033[1mgithub-sync\033[0m, \033[1mghsync\033[0m)"
 
 # 3. Handle OS-specific App Wrappers
 if [[ "$OS" == "Darwin" ]]; then
@@ -327,7 +327,6 @@ if [[ "$OS" == "Darwin" ]]; then
 export APP_GUI=1
 "$REPO_DIR/scripts/github-sync.sh"
 
-echo ""
 read -p "Press [Enter] to exit..."
 
 WIN_ID=\$(osascript -e 'tell application "Terminal" to get id of front window' 2>/dev/null)
@@ -343,7 +342,7 @@ EOF
         cp "/System/Applications/Utilities/Terminal.app/Contents/Resources/Terminal.icns" "$APP_DIR/Contents/Resources/applet.icns"
         touch "$APP_DIR"
     fi
-    echo -e "    \033[1;32m✓\033[0m ${ACTION_STR} macOS App (\033[1;4;37mGitHub Sync.app\033[0m)"
+    echo -e "    \033[1;32m∘\033[0m ${ACTION_STR} macOS App (\033[1;4;37mGitHub Sync.app\033[0m)"
 
 elif [[ "$OS" == "Linux" ]]; then
     DESKTOP_ENTRY_DIR="$HOME/.local/share/applications"
@@ -364,7 +363,7 @@ Keywords=git;github;sync;repository;
 EOF
 
     chmod +x "$DESKTOP_FILE"
-    echo -e "    \033[1;32m✓\033[0m ${ACTION_STR} Linux Application (\033[4mgithub-sync.desktop\033[0m)"
+    echo -e "    \033[1;32m∘\033[0m ${ACTION_STR} Linux Application (\033[4mgithub-sync.desktop\033[0m)"
 fi
 
 PATH_INJECTED=0
@@ -391,17 +390,17 @@ if [ "$PATH_INJECTED" -eq 0 ]; then
 
     if [ -n "$SHELL_RC" ]; then
         echo -e "\nexport PATH=\"\$HOME/.local/bin:\$PATH\"" >> "$SHELL_RC"
-        echo -e "    \033[1;32m✓\033[0m Configured PATH automatically via \033[4m$(basename "$SHELL_RC")\033[0m"
+        echo -e "    \033[1;32m∘\033[0m Configured PATH automatically via \033[4m$(basename "$SHELL_RC")\033[0m"
         echo -e "      \033[3m(Please restart your terminal or run 'source $SHELL_RC' to apply)\033[0m"
     fi
     echo ""
 else
-    echo -e "    \033[1;32m✓\033[0m PATH is already configured (\033[4m$LOCAL_BIN\033[0m)"
+    echo -e "    \033[1;32m∘\033[0m PATH is already configured (\033[4m$LOCAL_BIN\033[0m)"
     echo ""
 fi
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-echo -e "\033[1;32m  ✅ Installation Complete!\033[0m"
+echo -e "\033[1;32m  ✓  Installation Complete!\033[0m"
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo ""
 echo -e "    You can now launch it by typing \033[1;36mgithub-sync\033[0m or \033[1;36mghsync\033[0m in your terminal,"
@@ -421,5 +420,5 @@ elif [[ "$OS" == "Linux" ]]; then
     fi
 fi
 
-echo -e "\n    ©  2026 Sahil Kamal."
+echo -e "\n    ©  2026 Sahil Kamal"
 echo ""
