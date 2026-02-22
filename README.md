@@ -33,9 +33,22 @@ This utility allows you to seamlessly detect and clone repositories you own on G
 ### SSH Configuration Required
 Because this utility dynamically upgrades all remotes to secure SSH connections (as noted in Features), **you must have a GitHub SSH Key configured on your machine.**
 
-If you do not have an SSH key set up for GitHub, follow GitHub's official universal guide for your specific OS:
-1. [Generating a new SSH key](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
-2. [Adding the SSH key to your GitHub account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+If you do not have an SSH key set up, you can generate one quickly. Open your terminal (or Git Bash on Windows) and run this universal command:
+
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+Press **Enter** to accept the default file location, and optionally set a secure passphrase.
+
+Once generated, you will need to link it to your GitHub account:
+1. Copy your new public key to your clipboard:
+   - **macOS:** `pbcopy < ~/.ssh/id_ed25519.pub`
+   - **Linux:** `cat ~/.ssh/id_ed25519.pub` *(then copy the output)*
+   - **Windows:** `clip < ~/.ssh/id_ed25519.pub`
+2. Go to **Settings > SSH and GPG keys > New SSH key** on GitHub and paste your key. *(See the [official guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) for more details).*
+
+*(For advanced troubleshooting or managing the ssh-agent, refer to GitHub's [official SSH generation guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).)*
 
 ## Installation
 **For macOS (Double-Click):**
