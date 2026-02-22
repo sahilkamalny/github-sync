@@ -4,7 +4,7 @@
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
 ![Bash](https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white)
 
-☯︎ Cross-platform Git repository synchronizer with Bash and Powershell backends. Built for macOS, Linux, and Windows.
+Cross-platform Git repository synchronizer with Bash and Powershell backends. Built for macOS, Linux, and Windows.
 
 ## Features
 - **Parallel Fetching:** Iterates and pulls repositories concurrently, falling back gracefully if errors occur.
