@@ -40,4 +40,4 @@ Sleep 400ms
 Enter
 
 # Hold the final result on screen so the user can admire the output
-Sleep 3s
+Sleep 2s

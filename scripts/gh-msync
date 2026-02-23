@@ -67,7 +67,7 @@ print_usage() {
     cat <<'EOF'
 Usage: gh-msync [options] [repo-root ...]
 
-Sync local Git repositories in parallel.
+(GitHub Multi-Sync) Sync local Git repositories in parallel.
 
 Options:
   --configure, --config   Launch path configuration UI/CLI and exit
