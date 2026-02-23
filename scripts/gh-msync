@@ -220,10 +220,10 @@ print_box() {
     local horizontal
 
     title_width="$(string_display_width "$title")"
-    inner_width=$(( title_width + 2 ))
+    inner_width=$(( title_width + 3 ))
     horizontal="$(printf '%*s' "$inner_width" '' | tr ' ' '━')"
     echo -e "${border_color}┏${horizontal}┓${RESET}"
-    echo -e "${border_color}┃${RESET} ${title_color}${title}${RESET} ${border_color}┃${RESET}"
+    echo -e "${border_color}┃${RESET} ${title_color}${title}${RESET}  ${border_color}┃${RESET}"
     echo -e "${border_color}┗${horizontal}┛${RESET}"
 }
 
@@ -376,7 +376,7 @@ for i in "${!repo_paths[@]}"; do
         continue
     elif [ "${statuses[$i]}" -eq 1 ]; then
         # We didn't save the modified file count, so we just print skipped
-        echo -e "${BLUE}...${RESET} ${YELLOW}△ modified files: sync skipped${RESET}${upgrade_note}"
+        echo -e "${BLUE}...${RESET} ${YELLOW}△ modified files, sync skipped${RESET}${upgrade_note}"
         continue
     fi
     

@@ -20,3 +20,12 @@ Before publishing a new release, update `packaging/homebrew/gh-msync.rb` with:
 
 1. The new tag URL (if version changed).
 2. The exact tarball SHA256 for that tag.
+
+## Release checklist (manual)
+
+1. Ensure working tree is clean on `main`.
+2. Create or update the tag (example: `v1.0.0`) and push it.
+3. Create/update the GitHub release for that tag.
+4. Download the tag tarball and compute SHA256.
+5. Update `packaging/homebrew/gh-msync.rb` with the SHA.
+6. Commit and push the formula change.

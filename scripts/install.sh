@@ -77,10 +77,10 @@ print_box() {
     local horizontal
 
     title_width="$(string_display_width "$title")"
-    inner_width=$(( title_width + 2 ))
+    inner_width=$(( title_width + 3 ))
     horizontal="$(printf '%*s' "$inner_width" '' | tr ' ' '━')"
     echo -e "${border_color}┏${horizontal}┓${RESET}"
-    echo -e "${border_color}┃${RESET} ${title_color}${title}${RESET} ${border_color}┃${RESET}"
+    echo -e "${border_color}┃${RESET} ${title_color}${title}${RESET}  ${border_color}┃${RESET}"
     echo -e "${border_color}┗${horizontal}┛${RESET}"
 }
 

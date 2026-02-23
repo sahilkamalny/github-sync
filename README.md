@@ -18,7 +18,7 @@
 ---
 
 <div align="center">
-  <img src="assets/demo.gif" alt="GitHub Multi-Sync Terminal Recording" width="800">
+  <img src="assets/demo.gif" width="800" alt="GitHub Multi-Sync Terminal Demo" />
 </div>
 
 ---
