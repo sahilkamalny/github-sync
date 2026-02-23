@@ -82,18 +82,18 @@ ssh-keygen -t ed25519 -C "your_email@example.com"
 ## Quick start
 
 1. **Install** (choose one):
-   - **Homebrew (macOS):** `brew install sahilkamalny/homebrew-tap/git-msync`
+   - **Homebrew (macOS & Linux):** `brew install sahilkamalny/homebrew-tap/git-msync`
    - **From source:** Clone this repo and run `./scripts/install.sh` (or double-click `macOS-Install.command` / `Linux-Install.sh` on supported platforms).
 2. **Run:** `git msync` from any directory.
-3. **Configure (optional):** Add repository root paths to `~/.config/git-msync/config` (one path per line), or use the installer’s GUI. Default is `~/GitHub`.
+3. **Configure paths (optional):** Run `git msync --configure` to pick directories in a GUI or at the terminal. You can also edit `~/.config/git-msync/config` (one path per line). Default is `~/GitHub`.
 
 ---
 
 ## Installation
 
-### Option A: Homebrew (macOS, recommended when available)
+### Option A: Homebrew (macOS & Linux, recommended when available)
 
-The correct install command is **`brew install git-msync`** (one token). There is no `brew install git msync` — the formula name is always `git-msync`; after install, users run the Git subcommand as **`git msync`** (with a space).
+Works on **macOS and Linux** (Homebrew supports both). The install command is **`brew install git-msync`** (one token). There is no `brew install git msync` — the formula name is always `git-msync`; after install, users run the Git subcommand as **`git msync`** (with a space).
 
 Install with one command (Homebrew taps the repo automatically):
 
@@ -107,17 +107,18 @@ If they have already run `brew tap sahilkamalny/homebrew-tap`, they can use:
 brew install git-msync
 ```
 
-- The binary is installed to your Homebrew prefix (e.g. `/opt/homebrew/bin` on Apple Silicon or `/usr/local/bin` on Intel) as `git-msync`.
+- The binary is installed to your Homebrew prefix (e.g. `/opt/homebrew/bin` on Apple Silicon, `/usr/local/bin` on Intel, or Linux Homebrew’s prefix) as `git-msync`.
 - Git invokes it for `git msync` automatically.
-- No GUI installer is run; configure paths via `~/.config/git-msync/config` or by passing directories to `git msync` (see [Configuration](#configuration) and [Usage](#usage)).
+- A default config is created at `~/.config/git-msync/config` with `~/GitHub` if it doesn’t exist. To choose your directories the same way as the from-source installer (GUI or CLI), run **`git msync --configure`** (or `git msync --configure --cli` for terminal-only). See [Configuration](#configuration).
+- Homebrew does not create the **Git Multi-Sync** macOS app or Linux desktop launcher; use the from-source installer (Option B) if you want those. Path configuration is identical: `git msync --configure`.
 
-To **uninstall**:
+To **uninstall** (complete cleanup: binary, config, any from-source symlink/PATH/app/desktop):
 
 ```bash
 brew uninstall git-msync
 ```
 
-Remove `~/.config/git-msync` manually if you want to delete configuration.
+This removes the binary, `~/.config/git-msync`, any `~/.local/bin/git-msync` symlink, the PATH line the from-source installer may have added, and the Git Multi-Sync app/desktop launcher from standard locations.
 
 ### Option B: From source (all platforms)
 
@@ -141,11 +142,21 @@ After installation, run `git msync` from any directory. You can also launch **Gi
 
 ## Configuration
 
-- **Config file:** `~/.config/git-msync/config`
-- **Format:** One filesystem path per line. Each path is a directory that contains one or more Git repositories (e.g. `~/GitHub` or `~/Projects`). Blank lines and lines starting with `#` are ignored.
-- **Default:** If the file is missing or empty, `~/GitHub` is used.
+The tool needs to know which **directory (or directories)** hold your Git repos. Those paths are used whenever you run `git msync` with no arguments.
 
-You can edit the file by hand or re-run the from-source installer to use the GUI again. Paths passed on the command line override the config file (see [Usage](#usage)).
+**Option 1 — Path picker (recommended):** Run:
+
+```bash
+git msync --configure
+```
+
+This opens the same GUI (macOS/Linux) or a terminal prompt you get with the from-source installer. Use `git msync --configure --cli` to force terminal-only prompts. The chosen paths are saved to `~/.config/git-msync/config`.
+
+**Option 2 — Edit the config file:** `~/.config/git-msync/config` — one path per line (e.g. `~/GitHub` or `~/Projects`). Blank lines and lines starting with `#` are ignored.
+
+**Option 3 — Pass paths each time:** `git msync ~/GitHub ~/Projects` (see [Usage](#usage)).
+
+**Default:** If no config exists, `~/GitHub` is used.
 
 ---
 
@@ -158,6 +169,15 @@ git msync
 ```
 
 Uses paths from `~/.config/git-msync/config` (or `~/GitHub` if unset), pulls all repos in parallel, and optionally prompts to clone missing repositories if `gh` is installed and authenticated.
+
+### Configure paths
+
+```bash
+git msync --configure          # GUI or CLI path picker
+git msync --configure --cli   # terminal prompts only
+```
+
+Saves chosen directories to `~/.config/git-msync/config` so future `git msync` runs use them automatically.
 
 ### Headless / CLI only
 
@@ -191,21 +211,20 @@ Behavior is the same; `git msync` is the preferred interface.
 
 ## Uninstallation
 
+Both methods give you a **complete uninstall** (binary, config, PATH, app/desktop).
+
 - **If you installed via Homebrew:**  
-  `brew uninstall git-msync`  
-  Optionally remove `~/.config/git-msync`.
+  ```bash
+  brew uninstall git-msync
+  ```  
+  This removes the formula binary, `~/.config/git-msync`, any `~/.local/bin/git-msync` symlink, the PATH line the from-source installer may have added, and the **Git Multi-Sync** app/desktop launcher from standard locations.
 
 - **If you installed from source (install script or macOS/Linux installers):**  
   - **macOS:** Double-click `macOS-Uninstall.command`.  
   - **Linux:** Double-click `Linux-Uninstall.sh` or run it in a terminal.  
   - **Any:** From repo root: `./scripts/uninstall.sh`.
 
-The from-source uninstaller removes:
-
-- The `git-msync` symlink (or binary) from `~/.local/bin`
-- Any PATH line it added to your shell rc
-- `~/.config/git-msync`
-- The **Git Multi-Sync** app and desktop launcher (from the repo and from standard locations if you moved them)
+The from-source uninstaller removes the same set of items (including the app in the repo directory if it still exists there).
 
 ---
 

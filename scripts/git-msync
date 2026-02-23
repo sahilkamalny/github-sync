@@ -4,10 +4,31 @@
 # Git Multi-Sync — Repository Sync Utility
 # ==========================================
 
-printf '\033[2J\033[3J\033[H'
-
 CONFIG_DIR="$HOME/.config/git-msync"
 CONFIG_FILE="$CONFIG_DIR/config"
+
+# --configure / --config: run path picker and save to config, then exit
+if [[ "$1" == "--configure" || "$1" == "--config" ]]; then
+    CONFIGURER=""
+    PREFIX="$(brew --prefix git-msync 2>/dev/null)"
+    if [ -n "$PREFIX" ] && [ -x "$PREFIX/libexec/git-msync-configure" ]; then
+        CONFIGURER="$PREFIX/libexec/git-msync-configure"
+    else
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        if [ -x "$SCRIPT_DIR/configure-paths.sh" ]; then
+            CONFIGURER="$SCRIPT_DIR/configure-paths.sh"
+        fi
+    fi
+    if [ -n "$CONFIGURER" ]; then
+        shift
+        exec "$CONFIGURER" "$@"
+    else
+        echo "git-msync: configure script not found." >&2
+        exit 1
+    fi
+fi
+
+printf '\033[2J\033[3J\033[H'
 
 echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
 echo -e "\033[1;36m  ➢  Git Multi-Sync\033[0m"
