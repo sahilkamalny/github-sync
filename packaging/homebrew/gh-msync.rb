@@ -1,11 +1,11 @@
 # typed: false
 # frozen_string_literal: true
 
-# Git Multi-Sync: native Git subcommand to sync multiple repositories in parallel.
-class GitMsync < Formula
-  desc "Native Git subcommand to sync multiple repositories in parallel"
-  homepage "https://github.com/sahilkamalny/git-msync"
-  url "https://github.com/sahilkamalny/git-msync/archive/refs/tags/v1.0.0.tar.gz"
+# GitHub Multi-Sync: GitHub-oriented multi-repository sync utility.
+class GhMsync < Formula
+  desc "GitHub repository multi-sync utility"
+  homepage "https://github.com/sahilkamalny/gh-msync"
+  url "https://github.com/sahilkamalny/gh-msync/archive/refs/tags/v1.0.0.tar.gz"
   sha256 "PLACEHOLDER_SHA256"
   license "MIT"
 
@@ -13,13 +13,13 @@ class GitMsync < Formula
   depends_on "gh"
 
   def install
-    bin.install "scripts/git-msync" => "git-msync"
-    libexec.install "scripts/configure-paths.sh" => "git-msync-configure"
-    FileUtils.chmod 0755, libexec/"git-msync-configure"
+    bin.install "scripts/gh-msync" => "gh-msync"
+    libexec.install "scripts/configure-paths.sh" => "gh-msync-configure"
+    FileUtils.chmod 0755, libexec/"gh-msync-configure"
   end
 
   def post_install
-    config_dir = File.expand_path("~/.config/git-msync")
+    config_dir = File.expand_path("~/.config/gh-msync")
     config_file = File.join(config_dir, "config")
     return if File.exist?(config_file)
 
@@ -32,11 +32,11 @@ class GitMsync < Formula
     path_line = 'export PATH="$HOME/.local/bin:$PATH"'
 
     # Config directory
-    config_dir = File.join(home, ".config", "git-msync")
+    config_dir = File.join(home, ".config", "gh-msync")
     FileUtils.rm_rf config_dir if File.directory?(config_dir)
 
     # ~/.local/bin symlink/binary (from-source installs)
-    local_bin = File.join(home, ".local", "bin", "git-msync")
+    local_bin = File.join(home, ".local", "bin", "gh-msync")
     FileUtils.rm_f local_bin if File.exist?(local_bin)
 
     # PATH line from shell rc files
@@ -52,7 +52,7 @@ class GitMsync < Formula
     end
 
     # macOS app (standard locations only; repo path unknown here)
-    app_name = "Git Multi-Sync.app"
+    app_name = "GitHub Multi-Sync.app"
     [
       "/Applications/#{app_name}",
       File.join(home, "Applications", app_name),
@@ -63,31 +63,35 @@ class GitMsync < Formula
 
     # Linux desktop entry
     [
-      File.join(home, ".local", "share", "applications", "git-msync.desktop"),
-      File.join(home, "Desktop", "git-msync.desktop")
+      File.join(home, ".local", "share", "applications", "gh-msync.desktop"),
+      File.join(home, "Desktop", "gh-msync.desktop")
     ].each do |path|
       FileUtils.rm_f path if File.exist?(path)
     end
 
     # Legacy directory (if created in home or common location)
-    legacy_dir = File.join(home, "Git Multi-Sync")
+    legacy_dir = File.join(home, "GitHub Multi-Sync")
     FileUtils.rm_rf legacy_dir if File.directory?(legacy_dir)
   end
 
   caveats <<~EOS
-    Run as a Git subcommand:
-      git msync
+    Run directly:
+      gh-msync
 
     Configure which directories to sync (GUI or CLI):
-      git msync --configure
-      git msync --configure --cli   # terminal prompts only
+      gh-msync --configure
+      gh-msync --configure --cli   # terminal prompts only
 
-    You can also edit ~/.config/git-msync/config (one path per line)
-    or pass paths on the command line: git msync ~/GitHub ~/Projects
+    Optional: install as a GitHub CLI extension:
+      gh extension install sahilkamalny/gh-msync
+      gh msync
+
+    You can also edit ~/.config/gh-msync/config (one path per line)
+    or pass paths on the command line: gh-msync ~/GitHub ~/Projects
   EOS
 
   test do
     (testpath/"empty").mkdir
-    assert_match "No Git repositories found", shell_output("#{bin}/git-msync --cli #{testpath}/empty 2>&1", 0)
+    assert_match "No Git repositories found", shell_output("#{bin}/gh-msync --cli #{testpath}/empty 2>&1", 0)
   end
 end

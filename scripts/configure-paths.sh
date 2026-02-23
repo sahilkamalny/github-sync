@@ -1,13 +1,26 @@
 #!/bin/bash
-# Git Multi-Sync — path configuration only. Used by git-msync --configure and by the installer.
+# GitHub Multi-Sync — path configuration only. Used by gh-msync --configure and by the installer.
 
-CONFIG_DIR="${HOME}/.config/git-msync"
+CONFIG_DIR="${HOME}/.config/gh-msync"
 CONFIG_FILE="${CONFIG_DIR}/config"
 mkdir -p "$CONFIG_DIR"
 
 OS="$(uname -s)"
 CYAN="\033[1;36m"
 RESET="\033[0m"
+
+print_box() {
+    local title="$1"
+    local border_color="${2:-\033[1;34m}"
+    local title_color="${3:-\033[1;36m}"
+    local inner_width=$(( ${#title} + 2 ))
+    local horizontal
+
+    horizontal="$(printf '%*s' "$inner_width" '' | tr ' ' '━')"
+    echo -e "${border_color}┏${horizontal}┓${RESET}"
+    echo -e "${border_color}┃${RESET} ${title_color}${title}${RESET} ${border_color}┃${RESET}"
+    echo -e "${border_color}┗${horizontal}┛${RESET}"
+}
 
 USER_PATHS=""
 if [ -f "$CONFIG_FILE" ]; then
@@ -35,9 +48,7 @@ fi
 
 if [ "$QUIET" -eq 0 ]; then
     printf '\033[2J\033[3J\033[H'
-    echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-    echo -e "\033[1;36m  ➢  Git Multi-Sync — Configure paths\033[0m"
-    echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    print_box "➢  GitHub Multi-Sync — Configure paths"
     echo ""
 fi
 
@@ -61,7 +72,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
             if pathString is "" then set pathString to "(None selected. Default configuration will be applied.)"
 
             try
-                set theResult to display dialog "Current Repositories:" & return & return & pathString buttons {"Done", "Remove Folder...", "Add Folder..."} default button "Add Folder..." with title "Git Multi-Sync Configuration"
+                set theResult to display dialog "Current Repositories:" & return & return & pathString buttons {"Done", "Remove Folder...", "Add Folder..."} default button "Add Folder..." with title "GitHub Multi-Sync Configuration"
 
                 if button returned of theResult is "Add Folder..." then
                     set newFolders to choose folder with prompt "Select a repository folder (Hold Command to select multiple):" default location (path to home folder) multiple selections allowed true
@@ -81,7 +92,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
                             set userPaths to newUserPaths
                         end if
                     else
-                        display dialog "There are no folders to remove yet." buttons {"OK"} default button "OK" with title "Git Multi-Sync Configuration"
+                        display dialog "There are no folders to remove yet." buttons {"OK"} default button "OK" with title "GitHub Multi-Sync Configuration"
                     end if
                 else if button returned of theResult is "Done" then
                     exit repeat
@@ -122,7 +133,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
                     path_string="(None selected. Default configuration will be applied.)"
                 fi
 
-                action=$(zenity --question --title="Git Multi-Sync Configuration" --text="<b>Current Repositories:</b>\n\n$path_string" --ok-label="Done" --cancel-label="Add Folder..." --extra-button="Remove Folder..." 2>/dev/null)
+                action=$(zenity --question --title="GitHub Multi-Sync Configuration" --text="<b>Current Repositories:</b>\n\n$path_string" --ok-label="Done" --cancel-label="Add Folder..." --extra-button="Remove Folder..." 2>/dev/null)
                 ret=$?
 
                 if [ "$action" = "Remove Folder..." ]; then
@@ -145,7 +156,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
                             user_paths_array=("${new_array[@]}")
                         fi
                     else
-                        zenity --info --title="Git Multi-Sync Configuration" --text="No folders to remove yet." 2>/dev/null
+                        zenity --info --title="GitHub Multi-Sync Configuration" --text="No folders to remove yet." 2>/dev/null
                     fi
                 elif [ $ret -eq 0 ]; then
                     break
@@ -167,7 +178,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
                 for p in "${user_paths_array[@]}"; do path_string+="∘ $p\n"; done
                 [ -z "$path_string" ] && path_string="(None selected. Default configuration will be applied.)"
 
-                kdialog --yesnocancel "Current Repositories:\n\n$path_string" --yes-label "Done" --no-label "Add Folder..." --cancel-label "Remove Folder..." --title "Git Multi-Sync Configuration" 2>/dev/null
+                kdialog --yesnocancel "Current Repositories:\n\n$path_string" --yes-label "Done" --no-label "Add Folder..." --cancel-label "Remove Folder..." --title "GitHub Multi-Sync Configuration" 2>/dev/null
                 ret=$?
 
                 if [ $ret -eq 0 ]; then break
@@ -187,7 +198,7 @@ if [ "$HAS_GUI" -eq 1 ]; then
                             user_paths_array=("${new_array[@]}")
                         fi
                     else
-                        kdialog --msgbox "No folders to remove yet." --title "Git Multi-Sync Configuration" 2>/dev/null
+                        kdialog --msgbox "No folders to remove yet." --title "GitHub Multi-Sync Configuration" 2>/dev/null
                     fi
                 else
                     break
@@ -210,7 +221,7 @@ if [ "$HAS_GUI" -eq 0 ]; then
         read -r input_paths
         [ -n "$input_paths" ] && USER_PATHS="$input_paths"
     else
-        printf "    ${CYAN}Enter comma-separated repository root paths (e.g. ~/GitHub ~/Projects): ${RESET}"
+        printf "    ${CYAN}Enter comma-separated repository root paths (e.g. ~/GitHub, ~/Projects): ${RESET}"
         read -r USER_PATHS
     fi
     echo ""
@@ -230,9 +241,7 @@ else
 fi
 
 if [ "$QUIET" -eq 0 ]; then
-    echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
-    echo -e "\033[1;36m  ❏  Saved paths\033[0m"
-    echo -e "\033[1;34m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+    print_box "❏  Saved paths"
     echo ""
     if [ -n "$USER_PATHS" ]; then
         IFS=',' read -ra PATH_ARRAY <<< "$USER_PATHS"
@@ -245,6 +254,6 @@ if [ "$QUIET" -eq 0 ]; then
     fi
     echo ""
     echo -e "    \033[1;32mConfiguration saved to \033[4m$CONFIG_FILE\033[0m"
-    echo -e "    Run \033[1mgit msync\033[0m to sync these repositories."
+    echo -e "    Run \033[1mgh-msync\033[0m to sync these repositories."
     echo ""
 fi
