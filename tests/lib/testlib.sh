@@ -94,7 +94,8 @@ cleanup_temp_root() {
 }
 
 strip_ansi() {
-    sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g'
+    # Use a literal ESC byte in the regex for BSD/GNU sed portability.
+    sed -E $'s/\033\\[[0-9;]*[A-Za-z]//g'
 }
 
 make_osacompile_stub() {
@@ -225,6 +226,7 @@ git_commit_file() {
     local path="$2"
     local contents="$3"
     local message="$4"
+    mkdir -p "$(dirname -- "$repo/$path")"
     printf '%s\n' "$contents" > "$repo/$path"
     git -C "$repo" add "$path"
     git -C "$repo" commit -m "$message" >/dev/null
