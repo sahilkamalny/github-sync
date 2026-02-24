@@ -103,7 +103,7 @@ assert_exists "$HOME1/.config/gh-msync/integrations/launch.sh"
 assert_contains "$HOME1/.config/gh-msync/integrations/launch.sh" "$REPO_DIR/scripts/gh-msync"
 if [ "$OS" = "Darwin" ]; then
     assert_exists "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh"
-    assert_contains "$OSACOMPILE_LOG1" 'do script "bash \"'
+    assert_contains "$OSACOMPILE_LOG1" 'do script "\"'
     assert_not_contains "$OSACOMPILE_LOG1" 'do script "exec bash'
     # shellcheck disable=SC2016 # Intentional literal pattern match against generated wrapper content.
     assert_contains \

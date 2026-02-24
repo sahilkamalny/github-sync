@@ -164,7 +164,7 @@ install_macos_app() {
     if ! osacompile -o "$app_dir" \
         -e 'tell application "Terminal"' \
         -e 'activate' \
-        -e "do script \"bash \\\"$app_dir_as/Contents/Resources/run.sh\\\"\"" \
+        -e "do script \"\\\"$app_dir_as/Contents/Resources/run.sh\\\"\"" \
         -e 'end tell' >/dev/null 2>&1; then
         log "    \033[1;33m△\033[0m macOS app not created (AppleScript compile failed)"
         return 0
