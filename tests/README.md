@@ -24,12 +24,14 @@ This repository uses a small, repo-local shell test suite designed for fast loca
 - `full` (default): runs the complete local suite.
 - `ci-posix`: runs the full suite used by the macOS/Linux CI jobs.
 - `windows-git-bash`: runs a Windows-compatible subset (skips POSIX-only lifecycle tests and PTY-only scenarios).
+- `linux-compat`: runs a distro-portability subset used by Linux compatibility CI containers (Debian/Fedora/Alpine).
 
 Examples:
 
 - `tests/run-all.sh --require-shellcheck`
 - `tests/run-all.sh --profile ci-posix --require-shellcheck`
 - `tests/run-all.sh --profile windows-git-bash`
+- `tests/run-all.sh --profile linux-compat`
 - `tests/run-all.sh --list-profiles`
 
 ## Naming conventions

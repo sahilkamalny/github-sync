@@ -9,6 +9,18 @@ permissions:
   contents: read
 
 jobs:
+  actionlint:
+    name: Lint (GitHub Actions workflows)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: rhysd/actionlint@v1
+
   test:
     name: Tests (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
@@ -45,10 +57,9 @@ jobs:
         run: tests/run-all.sh --profile ci-posix --require-shellcheck
 
   test-windows-git-bash:
-    name: Tests (windows-latest, Git Bash subset)
+    name: Tests (windows-latest, Git Bash)
     runs-on: windows-latest
     timeout-minutes: 20
-    continue-on-error: true
     defaults:
       run:
         shell: bash
@@ -67,3 +78,59 @@ jobs:
 
       - name: Run Windows Git Bash compatibility subset
         run: tests/run-all.sh --profile windows-git-bash
+
+  test-linux-compat:
+    name: Tests (linux-compat, ${{ matrix.distro }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - distro: debian-stable
+            image: debian:stable-slim
+          - distro: fedora-latest
+            image: fedora:latest
+          - distro: alpine-3.20
+            image: alpine:3.20
+    container:
+      image: ${{ matrix.image }}
+
+    steps:
+      - name: Install test dependencies (container)
+        shell: sh
+        run: |
+          set -eu
+          case "${{ matrix.distro }}" in
+            debian-stable)
+              apt-get update
+              DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+                bash ca-certificates coreutils findutils git grep procps python3 sed
+              ;;
+            fedora-latest)
+              dnf install -y \
+                bash ca-certificates coreutils findutils git grep procps-ng python3 sed
+              ;;
+            alpine-3.20)
+              apk add --no-cache \
+                bash ca-certificates coreutils findutils git grep procps python3 sed
+              ;;
+            *)
+              echo "Unsupported distro: ${{ matrix.distro }}" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show tool versions (Linux compat container)
+        shell: bash
+        run: |
+          bash --version | head -n 1
+          git --version
+          python3 --version
+
+      - name: Run Linux distro compatibility subset
+        shell: bash
+        run: tests/run-all.sh --profile linux-compat

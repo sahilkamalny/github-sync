@@ -54,11 +54,25 @@ assert_file_contains "$TMP_ROOT/gh-msync-help.txt" "--install-integrations"
 assert_file_contains "$TMP_ROOT/gh-msync-help.txt" "--uninstall-integrations"
 pass "core help includes launcher integration flags"
 
-if rg -n "github-sync" -S . -g '!tests/**' > "$TMP_ROOT/stale-paths.txt"; then
-    cat "$TMP_ROOT/stale-paths.txt" >&2
-    fail "stale github-sync references remain"
+if command -v rg >/dev/null 2>&1; then
+    if rg -n "github-sync" -S . -g '!tests/**' > "$TMP_ROOT/stale-paths.txt"; then
+        cat "$TMP_ROOT/stale-paths.txt" >&2
+        fail "stale github-sync references remain"
+    fi
+else
+    if grep -RIn --exclude-dir=.git --exclude-dir=tests -- "github-sync" . > "$TMP_ROOT/stale-paths.txt"; then
+        cat "$TMP_ROOT/stale-paths.txt" >&2
+        fail "stale github-sync references remain"
+    fi
 fi
 pass "no stale github-sync repo-name references remain"
+
+if command -v actionlint >/dev/null 2>&1; then
+    actionlint
+    pass "actionlint passes for GitHub Actions workflows"
+else
+    note "SKIP actionlint (not installed)"
+fi
 
 if is_windows_like; then
     note "SKIP executable-bit checks on Windows Git Bash"

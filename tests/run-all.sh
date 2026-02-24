@@ -18,18 +18,18 @@ while [ $# -gt 0 ]; do
             shift
             [ $# -gt 0 ] || {
                 echo "Missing value for --profile" >&2
-                echo "Usage: tests/run-all.sh [--profile full|ci-posix|windows-git-bash] [--require-shellcheck]" >&2
+                echo "Usage: tests/run-all.sh [--profile full|ci-posix|windows-git-bash|linux-compat] [--require-shellcheck]" >&2
                 exit 2
             }
             PROFILE="$1"
             ;;
         --list-profiles)
-            printf '%s\n' "full" "ci-posix" "windows-git-bash"
+            printf '%s\n' "full" "ci-posix" "windows-git-bash" "linux-compat"
             exit 0
             ;;
         *)
             echo "Unknown option: $1" >&2
-            echo "Usage: tests/run-all.sh [--profile full|ci-posix|windows-git-bash] [--require-shellcheck]" >&2
+            echo "Usage: tests/run-all.sh [--profile full|ci-posix|windows-git-bash|linux-compat] [--require-shellcheck]" >&2
             exit 2
             ;;
     esac
@@ -55,6 +55,14 @@ case "$PROFILE" in
             "$TESTS_DIR/smoke-integrations.sh"
             "$TESTS_DIR/core-behavior.sh"
             "$TESTS_DIR/real-git-sync.sh"
+        )
+        ;;
+    linux-compat)
+        TEST_SCRIPTS=(
+            "$TESTS_DIR/smoke-integrations.sh"
+            "$TESTS_DIR/core-behavior.sh"
+            "$TESTS_DIR/real-git-sync.sh"
+            "$TESTS_DIR/configure-install-uninstall.sh"
         )
         ;;
     *)
