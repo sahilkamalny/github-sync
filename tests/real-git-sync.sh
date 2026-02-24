@@ -25,15 +25,16 @@ make_remote_with_seed_and_clone() {
     remote_path="$remotes_dir/$name.git"
     seed_path="$work_dir/$name-seed"
 
-    git init --bare "$remote_path" >/dev/null
-    git init "$seed_path" >/dev/null
+    git init --bare "$remote_path" >/dev/null 2>&1
+    git init "$seed_path" >/dev/null 2>&1
     git_init_identity "$seed_path"
     git -C "$seed_path" branch -m main >/dev/null
     git -C "$seed_path" remote add origin "$remote_path"
     git_commit_file "$seed_path" README.md "# $name" "init"
     git -C "$seed_path" push -u origin main >/dev/null 2>&1
+    git -C "$remote_path" symbolic-ref HEAD refs/heads/main >/dev/null 2>&1 || true
 
-    git clone "$remote_path" "$clone_dir/$name" >/dev/null 2>&1
+    git clone --branch main "$remote_path" "$clone_dir/$name" >/dev/null 2>&1
     git_init_identity "$clone_dir/$name"
 }
 
