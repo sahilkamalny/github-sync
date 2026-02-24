@@ -85,7 +85,7 @@ jobs:
           shfmt -d -i 4 -ci "${shell_files[@]}"
 
   test:
-    name: Tests (${{ matrix.os }})
+    name: Tests (posix-baseline, ${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     strategy:
@@ -120,7 +120,7 @@ jobs:
         run: tests/run-all.sh --profile ci-posix --require-shellcheck
 
   test-windows-git-bash:
-    name: Tests (windows-latest, Git Bash)
+    name: Tests (windows-compat, Git Bash, windows-latest)
     runs-on: windows-latest
     timeout-minutes: 20
     defaults:
