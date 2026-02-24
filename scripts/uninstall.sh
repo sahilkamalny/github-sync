@@ -38,7 +38,7 @@ print_box() {
     echo -e "${border_color}┗${horizontal}┛\033[0m"
 }
 
-print_box "➢  GitHub Multi-Sync Uninstaller" "\033[1;34m" "\033[1;31m"
+print_box "➢  GitHub Multi-Sync (Uninstaller)" "\033[1;34m" "\033[1;31m"
 echo ""
 
 HAS_INSTALL_ARTIFACT=0

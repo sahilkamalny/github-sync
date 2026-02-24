@@ -76,7 +76,7 @@ fi
 
 if [ "$QUIET" -eq 0 ]; then
     printf '\033[2J\033[3J\033[H'
-    print_box "➢  GitHub Multi-Sync — Configure paths"
+    print_box "➢  GitHub Multi-Sync (Configuration)"
     echo ""
 fi
 
@@ -304,7 +304,9 @@ else
 fi
 
 if [ "$QUIET" -eq 0 ]; then
-    print_box "❏  Saved paths"
+    echo -e "    \033[1;32m∘\033[0m Saved configuration to \033[4m~/.config/gh-msync/config\033[24m"
+    echo ""
+    print_box "❏  Target Paths"
     echo ""
     if [ -n "$USER_PATHS" ]; then
         IFS=',' read -ra PATH_ARRAY <<<"$USER_PATHS"
@@ -316,8 +318,8 @@ if [ "$QUIET" -eq 0 ]; then
         echo -e "    \033[1;34m∘\033[0m $HOME/GitHub (default)"
     fi
     echo ""
-    echo -e "    \033[1;32m✓\033[0m  (Configuration saved to \033[4m$CONFIG_FILE\033[24m)"
+    print_box "✓  Installation Complete!" "\033[1;34m" "\033[1;32m"
     echo ""
-    echo -e "    Run \033[1;36mgh-msync\033[0m to sync these repositories."
+    echo -e "    Run \033[1;36mgh-msync\033[0m to sync repositories in the target paths."
     echo ""
 fi

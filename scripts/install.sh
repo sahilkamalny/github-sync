@@ -64,7 +64,7 @@ print_box() {
     echo -e "${border_color}┗${horizontal}┛${RESET}"
 }
 
-print_box "➢  GitHub Multi-Sync Installer" "\033[1;34m" "\033[1;36m"
+print_box "➢  GitHub Multi-Sync (Installer)" "\033[1;34m" "\033[1;36m"
 echo ""
 
 # Run path configuration (same as gh-msync --configure)
@@ -96,7 +96,7 @@ else
     echo -e "    Configuration saved. Installing \033[1;36mGitHub Multi-Sync\033[0m..."
 fi
 echo ""
-print_box "❏  Target Repositories" "\033[1;34m" "\033[1;36m"
+print_box "❏  Target Paths" "\033[1;34m" "\033[1;36m"
 echo ""
 
 if [ -n "$USER_PATHS" ]; then
