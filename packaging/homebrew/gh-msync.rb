@@ -6,7 +6,7 @@ class GhMsync < Formula
   desc "GitHub repository multi-sync utility"
   homepage "https://github.com/sahilkamalny/gh-msync"
   url "https://github.com/sahilkamalny/gh-msync/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "bff92f1ce2a02f2b5edae8d3bd87e9ffb4853e40cd9cb15608446615b8122c87"
+  sha256 "9d02fc7b1cd63fa1bcaf0ab165602c5afe9e8165b4031c685cebf60d0e84cf9e"
   license "MIT"
 
   depends_on "git"
