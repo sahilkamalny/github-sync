@@ -108,11 +108,8 @@ if [ "$OS" = "Darwin" ]; then
     # shellcheck disable=SC2016 # Intentional literal pattern match against generated wrapper content.
     assert_contains \
         "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh" \
-        'osascript -e "tell application \\"Terminal\\" to close (every window whose id is $WIN_ID) saving no"'
+        'tell application \\"Terminal\\" to close (every window whose id is $WIN_ID) saving no'
     assert_contains \
-        "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh" \
-        'sleep 0.1'
-    assert_not_contains \
         "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh" \
         'nohup bash -c "sleep 0.1; osascript -e'
     # shellcheck disable=SC2016 # Intentional literal pattern match against generated wrapper content.

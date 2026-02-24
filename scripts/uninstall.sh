@@ -75,6 +75,11 @@ if [ "$FORCE_CLI" -eq 0 ]; then
     fi
 fi
 
+# Give Terminal a brief moment to render the banner before the GUI prompt steals focus.
+if [ "$HAS_GUI" -eq 1 ]; then
+    sleep 0.05
+fi
+
 # Native Uninstallation Confirmation
 if [ "$HAS_GUI" -eq 1 ]; then
     if [[ "$OS" == "Darwin" ]]; then

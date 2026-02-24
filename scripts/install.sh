@@ -19,26 +19,6 @@ CONFIG_DIR="$HOME/.config/gh-msync"
 CONFIG_FILE="$CONFIG_DIR/config"
 mkdir -p "$CONFIG_DIR"
 
-# Run path configuration (same as gh-msync --configure)
-CONFIGURE_SCRIPT="$REPO_DIR/scripts/configure-paths.sh"
-if [ ! -x "$CONFIGURE_SCRIPT" ]; then
-    echo "Installer error: configure-paths.sh not found." >&2
-    exit 1
-fi
-CONFIGURE_ARGS=("--quiet")
-for arg in "$@"; do
-    if [[ "$arg" == "--cli" || "$arg" == "--headless" ]]; then
-        CONFIGURE_ARGS+=("$arg")
-        break
-    fi
-done
-"$CONFIGURE_SCRIPT" "${CONFIGURE_ARGS[@]}"
-
-USER_PATHS=""
-if [ -f "$CONFIG_FILE" ]; then
-    USER_PATHS=$(paste -sd ',' "$CONFIG_FILE" 2>/dev/null || echo "")
-fi
-
 # Define Colors
 RESET="\033[0m"
 PATH_EXPORT_LINE="export PATH=\"\$HOME/.local/bin:\$PATH\""
@@ -86,6 +66,29 @@ print_box() {
 
 print_box "➢  GitHub Multi-Sync Installer" "\033[1;34m" "\033[1;36m"
 echo ""
+
+# Run path configuration (same as gh-msync --configure)
+CONFIGURE_SCRIPT="$REPO_DIR/scripts/configure-paths.sh"
+if [ ! -x "$CONFIGURE_SCRIPT" ]; then
+    echo "Installer error: configure-paths.sh not found." >&2
+    exit 1
+fi
+CONFIGURE_ARGS=("--quiet")
+for arg in "$@"; do
+    if [[ "$arg" == "--cli" || "$arg" == "--headless" ]]; then
+        CONFIGURE_ARGS+=("$arg")
+        break
+    fi
+done
+
+# Give Terminal a brief moment to render the installer banner before the GUI prompt steals focus.
+sleep 0.05
+"$CONFIGURE_SCRIPT" "${CONFIGURE_ARGS[@]}"
+
+USER_PATHS=""
+if [ -f "$CONFIG_FILE" ]; then
+    USER_PATHS=$(paste -sd ',' "$CONFIG_FILE" 2>/dev/null || echo "")
+fi
 
 if [ -f "$HOME/.local/bin/gh-msync" ]; then
     echo -e "    Configuration saved. Updating \033[1;36mGitHub Multi-Sync\033[0m..."

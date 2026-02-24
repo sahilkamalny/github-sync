@@ -80,6 +80,11 @@ if [ "$QUIET" -eq 0 ]; then
     echo ""
 fi
 
+if [ "$HAS_GUI" -eq 1 ] && [ "$QUIET" -eq 0 ]; then
+    # Give Terminal a brief moment to render the banner before the GUI prompt steals focus.
+    sleep 0.05
+fi
+
 if [ "$HAS_GUI" -eq 1 ]; then
     if [[ "$OS" == "Darwin" ]]; then
         echo -ne "    \033[3mPlease interact with the pop-up...\033[0m"
@@ -311,7 +316,7 @@ if [ "$QUIET" -eq 0 ]; then
         echo -e "    \033[1;34m∘\033[0m $HOME/GitHub (default)"
     fi
     echo ""
-    echo -e "    \033[1;32m✓\033[0m  Configuration saved to \033[4m$CONFIG_FILE\033[0m"
+    echo -e "    \033[1;32m✓  Configuration saved to \033[4m$CONFIG_FILE\033[24m\033[0m"
     echo ""
     echo -e "    Run \033[1mgh-msync\033[0m to sync these repositories."
     echo ""
