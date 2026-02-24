@@ -16,6 +16,11 @@ trap cleanup EXIT
 
 BASE_PATH="$PATH"
 
+if is_windows_like; then
+    skip "configure/install/uninstall lifecycle tests are POSIX-only in CI (Windows Git Bash profile skips this script)"
+    exit 0
+fi
+
 scenario_configure_paths_cli() {
     local home1 home2 home3 cfg
 

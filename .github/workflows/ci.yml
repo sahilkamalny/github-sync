@@ -42,4 +42,28 @@ jobs:
           shellcheck --version | head -n 1
 
       - name: Run local test suite
-        run: tests/run-all.sh --require-shellcheck
+        run: tests/run-all.sh --profile ci-posix --require-shellcheck
+
+  test-windows-git-bash:
+    name: Tests (windows-latest, Git Bash subset)
+    runs-on: windows-latest
+    timeout-minutes: 20
+    continue-on-error: true
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show tool versions (Windows Git Bash)
+        run: |
+          bash --version | head -n 1
+          git --version
+          python3 --version || python --version || true
+          ruby -v || true
+          shellcheck --version | head -n 1 || true
+
+      - name: Run Windows Git Bash compatibility subset
+        run: tests/run-all.sh --profile windows-git-bash

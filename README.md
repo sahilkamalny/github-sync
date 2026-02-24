@@ -335,6 +335,8 @@ Coverage includes:
 Optional:
 
 - CI-parity local run that requires `shellcheck`: `tests/run-all.sh --require-shellcheck`
+- List available test profiles (including the Windows Git Bash subset): `tests/run-all.sh --list-profiles`
+- Run a specific profile: `tests/run-all.sh --profile ci-posix --require-shellcheck`
 - Keep temporary test artifacts for debugging: `GH_MSYNC_TEST_KEEP_TEMP=1 tests/run-all.sh`
 
 ---

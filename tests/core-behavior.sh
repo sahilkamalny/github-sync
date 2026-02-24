@@ -309,6 +309,11 @@ EOF_GHSTUB
 scenario_missing_repo_clone_url_selection() {
     local home_dir base_dir stub_dir state_dir out log_file status
 
+    if ! supports_tty_automation; then
+        skip "missing-repo clone URL selection scenario requires PTY automation support"
+        return 0
+    fi
+
     home_dir="$TMP_ROOT/home-clone-selection"
     base_dir="$TMP_ROOT/clone-selection-base"
     stub_dir="$TMP_ROOT/clone-selection-stubs"

@@ -11,13 +11,26 @@ This repository uses a small, repo-local shell test suite designed for fast loca
 
 ## File structure
 
-- `tests/run-all.sh`: orchestrates all quality/smoke/integration tests.
+- `tests/run-all.sh`: orchestrates all quality/smoke/integration tests and supports CI profiles.
 - `tests/quality-checks.sh`: syntax, lint, and repo hygiene checks.
 - `tests/smoke-integrations.sh`: fast launcher integration smoke tests.
 - `tests/core-behavior.sh`: core `gh-msync` behavior tests (stubbed and interactive CLI scenarios).
 - `tests/real-git-sync.sh`: real `git` integration tests against local bare remotes.
 - `tests/configure-install-uninstall.sh`: temp-`HOME` lifecycle tests for config/install/uninstall paths.
 - `tests/lib/testlib.sh`: shared assertions, temp helpers, PTY input helper, and git fixture helpers.
+
+## Profiles
+
+- `full` (default): runs the complete local suite.
+- `ci-posix`: runs the full suite used by the macOS/Linux CI jobs.
+- `windows-git-bash`: runs a Windows-compatible subset (skips POSIX-only lifecycle tests and PTY-only scenarios).
+
+Examples:
+
+- `tests/run-all.sh --require-shellcheck`
+- `tests/run-all.sh --profile ci-posix --require-shellcheck`
+- `tests/run-all.sh --profile windows-git-bash`
+- `tests/run-all.sh --list-profiles`
 
 ## Naming conventions
 
@@ -38,4 +51,5 @@ This repository uses a small, repo-local shell test suite designed for fast loca
   2. smoke tests
   3. behavior/integration tests
   4. installer/uninstaller lifecycle tests
+- If a test is platform-specific, prefer capability checks and `SKIP` output over hard-failing on unsupported environments.
 - Update `README.md` project structure/testing section if the suite layout changes.

@@ -38,8 +38,12 @@ else
     note "SKIP shellcheck (not installed)"
 fi
 
-ruby -c packaging/homebrew/gh-msync.rb >/dev/null
-pass "Homebrew formula Ruby syntax is valid"
+if command -v ruby >/dev/null 2>&1; then
+    ruby -c packaging/homebrew/gh-msync.rb >/dev/null
+    pass "Homebrew formula Ruby syntax is valid"
+else
+    note "SKIP Homebrew formula Ruby syntax check (ruby not installed)"
+fi
 
 ./gh-msync --help > "$TMP_ROOT/gh-extension-help.txt"
 assert_file_contains "$TMP_ROOT/gh-extension-help.txt" "Usage: gh-msync"
@@ -56,28 +60,32 @@ if rg -n "github-sync" -S . -g '!tests/**' > "$TMP_ROOT/stale-paths.txt"; then
 fi
 pass "no stale github-sync repo-name references remain"
 
-for path in \
-    gh-msync \
-    macOS-Install.command \
-    macOS-Uninstall.command \
-    Linux-Install.sh \
-    Linux-Uninstall.sh \
-    scripts/gh-msync \
-    scripts/configure-paths.sh \
-    scripts/install.sh \
-    scripts/uninstall.sh \
-    scripts/system-integrations.sh \
-    tests/smoke-integrations.sh \
-    tests/run-all.sh \
-    tests/quality-checks.sh \
-    tests/core-behavior.sh \
-    tests/real-git-sync.sh \
-    tests/configure-install-uninstall.sh \
-    tests/lib/testlib.sh
-do
-    [ -x "$path" ] || fail "expected executable bit on $path"
-done
-pass "entrypoints and test scripts are executable"
+if is_windows_like; then
+    note "SKIP executable-bit checks on Windows Git Bash"
+else
+    for path in \
+        gh-msync \
+        macOS-Install.command \
+        macOS-Uninstall.command \
+        Linux-Install.sh \
+        Linux-Uninstall.sh \
+        scripts/gh-msync \
+        scripts/configure-paths.sh \
+        scripts/install.sh \
+        scripts/uninstall.sh \
+        scripts/system-integrations.sh \
+        tests/smoke-integrations.sh \
+        tests/run-all.sh \
+        tests/quality-checks.sh \
+        tests/core-behavior.sh \
+        tests/real-git-sync.sh \
+        tests/configure-install-uninstall.sh \
+        tests/lib/testlib.sh
+    do
+        [ -x "$path" ] || fail "expected executable bit on $path"
+    done
+    pass "entrypoints and test scripts are executable"
+fi
 
 git diff --check -- . >/dev/null
 pass "git diff --check reports no whitespace errors"

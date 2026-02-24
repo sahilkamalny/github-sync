@@ -23,6 +23,31 @@ fail() {
     exit 1
 }
 
+skip() {
+    printf 'SKIP %s\n' "$*"
+}
+
+test_platform() {
+    uname -s
+}
+
+is_windows_like() {
+    case "$(test_platform)" in
+        MINGW*|MSYS*|CYGWIN*)
+            return 0
+            ;;
+    esac
+    return 1
+}
+
+is_macos() {
+    [ "$(test_platform)" = "Darwin" ]
+}
+
+is_linux() {
+    [ "$(test_platform)" = "Linux" ]
+}
+
 assert_exists() {
     local path="$1"
     [ -e "$path" ] || fail "missing: $path"
@@ -95,12 +120,34 @@ EOS
     chmod +x "$dir/osacompile"
 }
 
+python3_supports_pty() {
+    command -v python3 >/dev/null 2>&1 || return 1
+    python3 - <<'PY' >/dev/null 2>&1
+import pty
+PY
+}
+
+supports_tty_automation() {
+    # Python's pty module is not available on Windows CPython, and `script(1)` is
+    # also commonly absent there. Treat Windows Git Bash as unsupported for the
+    # interactive PTY automation scenarios.
+    if is_windows_like; then
+        return 1
+    fi
+
+    if python3_supports_pty; then
+        return 0
+    fi
+
+    command -v script >/dev/null 2>&1
+}
+
 run_with_tty_and_input() {
     local output_file="$1"
     local input_text="$2"
     shift 2
 
-    if command -v python3 >/dev/null 2>&1; then
+    if python3_supports_pty; then
         set +e
         python3 - "$output_file" "$input_text" "$@" <<'PY'
 import os

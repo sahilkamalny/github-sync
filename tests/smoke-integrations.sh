@@ -24,6 +24,10 @@ pass() {
     printf 'PASS %s\n' "$1"
 }
 
+skip() {
+    printf 'SKIP %s\n' "$1"
+}
+
 fail() {
     printf 'FAIL %s\n' "$1" >&2
     exit 1
@@ -70,8 +74,10 @@ assert_exists "$HOME1/.config/gh-msync/integrations/launch.sh"
 assert_contains "$HOME1/.config/gh-msync/integrations/launch.sh" "$REPO_DIR/scripts/gh-msync"
 if [ "$OS" = "Darwin" ]; then
     assert_exists "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh"
-else
+elif [ "$OS" = "Linux" ]; then
     assert_exists "$HOME1/.local/share/applications/gh-msync.desktop"
+else
+    skip "OS-specific desktop artifact assertion skipped on $OS"
 fi
 pass "core --install-integrations creates shared launcher artifacts in temp HOME"
 
@@ -190,8 +196,10 @@ HOME="$HOME5" PATH="$STUB5:$BASE_PATH" "$REPO_DIR/scripts/gh-msync" --uninstall-
 assert_contains "$RMLOG5" "$HOME5/.config/gh-msync/integrations/launch.sh"
 if [ "$OS" = "Darwin" ]; then
     assert_contains "$RMLOG5" "$HOME5/Applications/GitHub Multi-Sync.app"
-else
+elif [ "$OS" = "Linux" ]; then
     assert_contains "$RMLOG5" "$HOME5/.local/share/applications/gh-msync.desktop"
+else
+    skip "OS-specific desktop cleanup assertion skipped on $OS"
 fi
 pass "core --uninstall-integrations invokes expected cleanup targets (dry-run rm stub)"
 
