@@ -44,6 +44,20 @@ assert_contains() {
     grep -Fq "$text" "$file" || fail "expected '$text' in $file"
 }
 
+assert_line_order() {
+    local file="$1"
+    local first="$2"
+    local second="$3"
+    local first_line second_line
+
+    first_line="$(grep -nF "$first" "$file" | head -n1 | cut -d: -f1 || true)"
+    second_line="$(grep -nF "$second" "$file" | head -n1 | cut -d: -f1 || true)"
+
+    [ -n "$first_line" ] || fail "missing '$first' in $file"
+    [ -n "$second_line" ] || fail "missing '$second' in $file"
+    [ "$first_line" -lt "$second_line" ] || fail "expected '$first' before '$second' in $file"
+}
+
 make_osacompile_stub() {
     local dir="$1"
     cat >"$dir/osacompile" <<'EOS'
@@ -74,6 +88,11 @@ assert_exists "$HOME1/.config/gh-msync/integrations/launch.sh"
 assert_contains "$HOME1/.config/gh-msync/integrations/launch.sh" "$REPO_DIR/scripts/gh-msync"
 if [ "$OS" = "Darwin" ]; then
     assert_exists "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh"
+    # shellcheck disable=SC2016 # Intentional literal pattern match against generated wrapper content.
+    assert_line_order \
+        "$HOME1/Applications/GitHub Multi-Sync.app/Contents/Resources/run.sh" \
+        'read -r -p "Press [Enter] to exit..."' \
+        'WIN_ID="$(osascript -e '\''tell application "Terminal" to get id of front window'\'' 2>/dev/null || true)"'
 elif [ "$OS" = "Linux" ]; then
     assert_exists "$HOME1/.local/share/applications/gh-msync.desktop"
 else

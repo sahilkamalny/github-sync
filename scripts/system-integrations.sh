@@ -174,10 +174,10 @@ install_macos_app() {
 #!/bin/bash
 export APP_GUI=1
 export SHELL_SESSIONS_DISABLE=1
-WIN_ID="\$(osascript -e 'tell application "Terminal" to get id of front window' 2>/dev/null || true)"
 "$launcher_as"
 
 read -r -p "Press [Enter] to exit..."
+WIN_ID="\$(osascript -e 'tell application "Terminal" to get id of front window' 2>/dev/null || true)"
 
 if [ -n "\$WIN_ID" ]; then
     osascript -e "tell application \\\"Terminal\\\" to set normal text color of (every window whose id is \$WIN_ID) to background color of (every window whose id is \$WIN_ID)" >/dev/null 2>&1 || true
