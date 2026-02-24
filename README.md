@@ -2,14 +2,20 @@
 
 # GitHub Multi-Sync
 
-**GitHub-focused CLI utility to sync multiple repositories in parallel — run `gh-msync` directly or `gh msync` as a GitHub CLI extension.**
+**Parallel GitHub repo sync CLI for multi-folder local workflows, with safe failure handling and SSH/HTTPS control.**
 
-[![Bash](https://img.shields.io/badge/Bash-5+-4EAA25?style=flat-square&logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash/)
+[![CI](https://github.com/sahilkamalny/gh-msync/actions/workflows/ci.yml/badge.svg)](https://github.com/sahilkamalny/gh-msync/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 [![macOS](https://img.shields.io/badge/macOS-Supported-000000?style=flat-square&logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![Linux](https://img.shields.io/badge/Linux-Supported-FCC624?style=flat-square&logo=linux&logoColor=black)](https://kernel.org/)
 [![Windows](https://img.shields.io/badge/Windows-Git%20Bash%20%2F%20WSL-0078D6?style=flat-square&logo=windows&logoColor=white)](https://www.microsoft.com/windows/)
+[![Bash](https://img.shields.io/badge/Bash-5+-4EAA25?style=flat-square&logo=gnu-bash&logoColor=white)](https://www.gnu.org/software/bash/)
 
-**Built with** Bash · GitHub CLI · AppleScript
+**Run modes:** `gh-msync` · `gh msync` (GitHub CLI extension)
+
+**Proof points:** macOS/Linux CI · non-destructive test suite · `shellcheck` clean · Homebrew + `gh` extension support
+
+**Built with:** Bash · GitHub CLI · AppleScript
 
 [Portfolio](https://sahilkamal.dev) · [LinkedIn](https://linkedin.com/in/sahilkamalny) · [Contact](mailto:sahilkamal.dev@gmail.com)
 
@@ -21,10 +27,15 @@
   <img src="assets/demo.gif" width="800" alt="GitHub Multi-Sync Terminal Demo" />
 </div>
 
+<p align="center">
+  Demo: one command scans configured roots, syncs repositories in parallel, and reports per-repo outcomes.
+</p>
+
 ---
 
 ## Table of contents
 
+- [Engineering highlights](#engineering-highlights)
 - [Overview](#overview)
 - [Features](#features)
 - [Prerequisites](#prerequisites)
@@ -32,11 +43,21 @@
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
+- [Testing (repo-local)](#testing-repo-local)
 - [Uninstallation](#uninstallation)
 - [Project structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
 - [Contributing](#contributing)
 - [License](#license)
+
+---
+
+## Engineering highlights
+
+- **Portfolio-grade engineering signals**: repo-local automated test suite, `shellcheck` coverage, and GitHub Actions CI on macOS + Linux.
+- **User-facing reliability**: failed pulls trigger `git rebase --abort` protection and launcher fallbacks preserve real runtime errors.
+- **Cross-install-method consistency**: Homebrew, from-source, and `gh` extension mode share the same launcher integration behavior.
+- **Practical CLI UX**: interactive configuration, optional GUI flows, and HTTPS/SSH mode control for different developer environments.
 
 ---
 
@@ -295,6 +316,29 @@ gh-msync ~/ClientCode ~/SecondaryDrive
 
 ---
 
+## Testing (repo-local)
+
+Run the full non-destructive quality + behavior test suite:
+
+```bash
+tests/run-all.sh
+```
+
+Coverage includes:
+
+- Shell syntax + `shellcheck` + Homebrew formula Ruby syntax checks
+- Launcher integration smoke tests
+- Core `gh-msync` behavior tests (flags, config parsing, SSH/HTTPS logic, clone URL selection)
+- Real `git` integration tests using local bare remotes only (no network)
+- Configure/install/uninstall lifecycle tests in a temporary `HOME`
+
+Optional:
+
+- CI-parity local run that requires `shellcheck`: `tests/run-all.sh --require-shellcheck`
+- Keep temporary test artifacts for debugging: `GH_MSYNC_TEST_KEEP_TEMP=1 tests/run-all.sh`
+
+---
+
 ## Uninstallation
 
 Cleanup depends on install method, but the macOS/Linux launcher cleanup is shared across all of them.
@@ -360,6 +404,15 @@ The from-source uninstaller removes the `gh-msync` symlink, PATH injection (if i
 | `Linux-Install.sh` | Linux entry point → runs `scripts/install.sh`. |
 | `macOS-Uninstall.command` / `Linux-Uninstall.sh` | Entry points → run `scripts/uninstall.sh`. |
 | `packaging/homebrew/gh-msync.rb` | Homebrew formula (installs the binary + helper scripts, and auto-installs shared launcher integrations). |
+| `RELEASING.md` | Release checklist for tags/tarballs/Homebrew formula updates and final verification. |
+| `tests/run-all.sh` | One-command local test runner (quality checks + all repo-local smoke/integration tests). |
+| `tests/README.md` | Test suite structure, naming conventions, and guidance for adding new tests. |
+| `tests/quality-checks.sh` | Syntax/lint/hygiene checks (`bash -n`, `shellcheck`, Ruby syntax, wrapper/help smoke). |
+| `tests/smoke-integrations.sh` | Non-destructive smoke tests for shared launcher integration creation/removal and launcher fallback behavior. |
+| `tests/core-behavior.sh` | Non-destructive core `gh-msync` behavior tests (flags, sync-flow stubs, interactive clone URL selection). |
+| `tests/real-git-sync.sh` | Real `git` integration tests against local bare remotes (pull/update/skip behavior). |
+| `tests/configure-install-uninstall.sh` | Temp-`HOME` tests for configuration, from-source install/uninstall lifecycle, and Linux wrapper fallback dispatch. |
+| `tests/lib/testlib.sh` | Shared test helpers for assertions, temp dirs, PTY input, and git fixture setup. |
 | `assets/` | Demo assets (e.g. `demo.tape`, `demo.gif`). |
 
 ---
@@ -392,6 +445,8 @@ The from-source uninstaller removes the `gh-msync` symlink, PATH injection (if i
 ## Contributing
 
 Pull requests and issues are welcome. For bugs or feature requests, please open an issue.
+
+Before opening a PR, run `tests/run-all.sh` locally. For release steps (tagging, Homebrew formula SHA updates, final verification), see `RELEASING.md`.
 
 ---
 
