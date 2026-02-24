@@ -28,7 +28,7 @@
 </div>
 
 <p align="center">
-  Demo: one command scans configured roots, syncs repositories in parallel, and reports per-repo outcomes.
+  Demo: one command scans configured roots, syncs repositories in parallel, reports per-repo outcomes, and clones missing repos to configured roots.
 </p>
 
 ---
@@ -36,7 +36,7 @@
 ## Engineering highlights
 
 - **Portfolio-grade engineering signals**: repo-local automated tests, shell/CI/docs linting (`shellcheck`, `shfmt`, `actionlint`, `markdownlint`, `typos`), and GitHub Actions CI across macOS, Windows (Git Bash), Ubuntu, plus a pinned Linux distro compatibility matrix (Debian/Fedora/Alpine).
-- **Protected main branch governance**: `main` is protected with required PR + lint/test checks, and CI lanes/check names are standardized for reliable enforcement.
+- **Branch-protection-ready governance**: CI lanes and check names are standardized for a protected `main` workflow with required PR + lint/test checks.
 - **User-facing reliability**: failed pulls trigger `git rebase --abort`, and launcher fallbacks preserve real runtime errors (no masking).
 - **Cross-install-method consistency**: Homebrew, from-source, and `gh` extension mode share the same launcher integration behavior.
 - **Practical CLI UX**: interactive configuration, optional GUI flows, and explicit HTTPS/SSH mode control.
