@@ -23,7 +23,7 @@ scenario_arg_parsing() {
     scripts/gh-msync --help >"$out"
     assert_file_contains "$out" "Usage: gh-msync"
     assert_file_contains "$out" "--ssh-upgrade"
-    assert_file_contains "$out" "--install, --install-integrations"
+    assert_file_contains "$out" "--install-launcher, --install-integrations"
     pass "help output renders expected core flags"
 
     out="$TMP_ROOT/unknown.txt"
@@ -37,7 +37,7 @@ scenario_arg_parsing() {
 
     out="$TMP_ROOT/mutually-exclusive.txt"
     set +e
-    scripts/gh-msync --install --uninstall-integrations >"$out" 2>&1
+    scripts/gh-msync --install-launcher --uninstall-integrations >"$out" 2>&1
     status=$?
     set -e
     assert_status "$status" 2
@@ -62,21 +62,21 @@ EOF_INTSTUB
 
     out="$TMP_ROOT/integration-install-alias.txt"
     set +e
-    HOME="$home_dir" "$app_dir/scripts/gh-msync" --install >"$out" 2>&1
+    HOME="$home_dir" "$app_dir/scripts/gh-msync" --install-launcher >"$out" 2>&1
     status=$?
     set -e
     assert_status "$status" 0
     assert_file_contains "$home_dir/integrations-helper-args.log" "install"
-    pass "gh-msync --install dispatches to shared integrations helper"
+    pass "gh-msync --install-launcher dispatches to shared integrations helper"
 
     out="$TMP_ROOT/integration-uninstall-alias.txt"
     set +e
-    HOME="$home_dir" "$app_dir/scripts/gh-msync" --uninstall >"$out" 2>&1
+    HOME="$home_dir" "$app_dir/scripts/gh-msync" --uninstall-launcher >"$out" 2>&1
     status=$?
     set -e
     assert_status "$status" 0
     assert_file_contains "$home_dir/integrations-helper-args.log" "uninstall"
-    pass "gh-msync --uninstall dispatches to shared integrations helper"
+    pass "gh-msync --uninstall-launcher dispatches to shared integrations helper"
 }
 
 scenario_config_and_no_repo_handling() {

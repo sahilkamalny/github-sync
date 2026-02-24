@@ -181,10 +181,11 @@ WIN_ID="\$(osascript -e 'tell application "Terminal" to get id of front window' 
 
 if [ -n "\$WIN_ID" ]; then
     osascript -e "tell application \\\"Terminal\\\" to set normal text color of (every window whose id is \$WIN_ID) to background color of (every window whose id is \$WIN_ID)" >/dev/null 2>&1 || true
-    if ! osascript -e "tell application \\\"Terminal\\\" to close (every window whose id is \$WIN_ID) saving no" >/dev/null 2>&1; then
-        /bin/kill -9 \$PPID >/dev/null 2>&1 || true
-    fi
-    exit 0
+    (
+        sleep 0.1
+        osascript -e "tell application \\\"Terminal\\\" to close (every window whose id is \$WIN_ID) saving no" >/dev/null 2>&1 || true
+    ) >/dev/null 2>&1 &
+    exec /bin/kill -9 \$PPID
 fi
 exec /bin/kill -9 \$PPID
 EOF_MACRUN
@@ -226,7 +227,7 @@ EOF_DESKTOP
 install_integrations() {
     local launcher_script os
     launcher_script="$(write_launcher_script)"
-    log "    \033[1;32m∘\033[0m Installed launcher helper (\033[4m~/.config/gh-msync/integrations/launch.sh\033[0m)"
+    log "    \033[1;32m∘\033[0m Installed shared app/launcher helper (\033[4m~/.config/gh-msync/integrations/launch.sh\033[0m)"
 
     os="$(uname -s)"
     if [[ "$os" == "Darwin" ]]; then
@@ -283,7 +284,7 @@ uninstall_integrations() {
         remove_if_exists "$LEGACY_REPO_DIR/GitHub Multi-Sync.app" "legacy macOS App in repo (\033[4mGitHub Multi-Sync.app\033[0m)" "dir"
     fi
 
-    remove_if_exists "$launcher_script" "launcher helper (\033[4m~/.config/gh-msync/integrations/launch.sh\033[0m)"
+    remove_if_exists "$launcher_script" "shared app/launcher helper (\033[4m~/.config/gh-msync/integrations/launch.sh\033[0m)"
     if [ -d "$integrations_dir" ] && [ -z "$(ls -A "$integrations_dir" 2>/dev/null)" ]; then
         rmdir "$integrations_dir" >/dev/null 2>&1 || true
     fi

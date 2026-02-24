@@ -169,9 +169,9 @@ Options:
   --cli, --headless         Force terminal-only prompts (no GUI dialogs)
   --no-ssh-upgrade          Keep GitHub remotes/clones on HTTPS (no SSH conversion)
   --ssh-upgrade             Explicitly enable GitHub HTTPS -> SSH conversion
-  --install, --install-integrations
+  --install-launcher, --install-integrations
                            Create/update the macOS app or Linux launcher only, then exit
-  --uninstall, --uninstall-integrations
+  --uninstall-launcher, --uninstall-integrations
                            Remove the macOS app or Linux launcher only, then exit
   -h, --help                Show this help message and exit
 
@@ -190,10 +190,10 @@ for arg in "$@"; do
         --configure | --config)
             RUN_CONFIGURE=1
             ;;
-        --install | --install-integrations)
+        --install-launcher | --install-integrations)
             RUN_INSTALL_INTEGRATIONS=1
             ;;
-        --uninstall | --uninstall-integrations)
+        --uninstall-launcher | --uninstall-integrations)
             RUN_UNINSTALL_INTEGRATIONS=1
             ;;
         --cli | --headless)
@@ -203,7 +203,7 @@ for arg in "$@"; do
 done
 
 if [ "$RUN_INSTALL_INTEGRATIONS" -eq 1 ] && [ "$RUN_UNINSTALL_INTEGRATIONS" -eq 1 ]; then
-    echo "gh-msync: choose only one install/remove integration action (--install/--install-integrations or --uninstall/--uninstall-integrations)." >&2
+    echo "gh-msync: choose only one launcher integration action (--install-launcher/--install-integrations or --uninstall-launcher/--uninstall-integrations)." >&2
     exit 2
 fi
 
@@ -275,7 +275,7 @@ for arg in "$@"; do
         --cli | --headless)
             FORCE_CLI=1
             ;;
-        --install | --install-integrations | --uninstall | --uninstall-integrations)
+        --install-launcher | --install-integrations | --uninstall-launcher | --uninstall-integrations)
             # handled earlier
             ;;
         --no-ssh-upgrade)
